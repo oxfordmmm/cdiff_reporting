@@ -4,6 +4,13 @@
     "description":"catalogue JSON for MMM Cdiff AMR analysis",
     "type":"object",
     "properties":{
+        "drugs":{
+            "description":"list of drugs needing to be reported",
+            "type":"array",
+            "items": {
+                "type": "string"
+            }
+        },
         "genes":{
             "description":"gene conferring resitance",
             "type":"object",

@@ -14,16 +14,18 @@ import utils
 def process_AMR_args(parser):
     parser.add_argument('-c', '--catalogue', required=True,
                             help='Path to resistance catalogue')
-    parser.add_argument('-s', '--schema', required=False,
+    parser.add_argument('-s', '--schema', required=False, default=None,
                             help='Path to resistance catalogue')
     parser.add_argument('-b', '--blast_output_tsv', required=True,
                             help='Path to blast output tsv of gene information')
     parser.add_argument('-f', '--amr_finder_output_tsv', required=True,
                             help='Path to amr finder plus output tsv of mutation information')
+    parser.add_argument('-o', '--output_json', required=False, default="resistance_report.json",
+                            help='Path to output json')
     return parser
 
 
-def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file: str, schema_file:str=None):
+def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file: str, schema_file:str, output_json:str):
     # load JSON catalogue
     if not Path(catalogue_file).is_file():
         logging.error("{} is not a file.".format(catalogue_file))
@@ -64,7 +66,10 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
             for line in reader:
                 amr_finder_list.add(line[5])
     
-    drug_resistances = set()
+    drug_resistances = dict()
+    for drug in catalogue["drugs"]:
+        drug_resistances[drug] = "S"
+
     for gene, gene_value in catalogue["genes"].items():
         gene_regex = fr"{gene}"
         for feature in blast_list:
@@ -77,15 +82,19 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
                                 for mutation, mutation_value in allele_value["mutations"].items():
                                     mutation_regex = fr"{mutation}"
                                     if re.search(mutation_regex, feature):
-                                        drug_resistances.add(mutation_value["drug"])
+                                        drug_resistances[mutation_value["drug"]] = "R"
                             else:
-                                drug_resistances.add(allele_value["drug"])
+                                drug_resistances[allele_value["drug"]] = "R"
                 else:
-                    drug_resistances.add(gene_value["drug"])
-    print(drug_resistances)
+                    drug_resistances[gene_value["drug"]] = "R"
+
+    # Serializing and outputting json
+    drug_json = json.dumps(drug_resistances, indent=4)
+    with open(output_json, "w") as outfile:
+        outfile.write(drug_json)
 
 if __name__ == "__main__":
-    parser = ArgumentParser(description='Process BLAST and AMR finder Plus outputs to produce AMR report JSON')
+    parser = ArgumentParser(description='Process BLAST and AMR finder plus outputs to produce AMR report JSON')
     parser = process_AMR_args(parser)
     args = parser.parse_args()
 
@@ -96,4 +105,4 @@ if __name__ == "__main__":
         format='%(asctime)s - %(levelname)s - %(message)s', 
         level=logging.INFO)
     
-    process_AMR(args.blast_output_tsv, args.amr_finder_output_tsv, args.catalogue, args.schema)
+    process_AMR(args.blast_output_tsv, args.amr_finder_output_tsv, args.catalogue, args.schema, args.output_json)

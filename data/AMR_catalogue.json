@@ -1,4 +1,12 @@
 {
+    "drugs": [
+        "Metronidazole",
+        "Tetracycline",
+        "Macrolide/Clindamycin",
+        "Aminoglycoside",
+        "Quinolone/Fluoroquinolone",
+        "Fidaxomicin"
+    ],
     "genes": {
         "pCD-METRO": {
             "drug": "Metronidazole"
