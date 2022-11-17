@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title":"Cdiff AMR catalogue",
+    "description":"catalogue JSON for MMM Cdiff AMR analysis",
+    "type":"object",
+    "properties":{
+        "genes":{
+            "description":"gene conferring resitance",
+            "type":"object",
+            "properties": {
+                "alleles": {
+                    "type":"object",
+                    "properties": {
+                        "mutations": {
+                            "type":"object",
+                            "properties": {
+                                "drug":{
+                                    "description":"Drug of resistance",
+                                    "type":"string"
+                                }
+                            }
+                        },
+                        "drug":{
+                            "description":"Drug of resistance",
+                            "type":"string"
+                        }
+                    }
+                },
+                "drug":{
+                    "description":"Drug of resistance",
+                    "type":"string"
+                }
+            }
+        }
+    },
+    "required":[
+        "genes"
+    ]
+}

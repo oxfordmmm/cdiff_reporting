@@ -1,0 +1,71 @@
+{
+    "genes": {
+        "pCD-METRO": {
+            "drug": "Metronidazole"
+        },
+        "tet": {
+            "drug": "Tetracycline"
+        },
+        "erm": {
+            "alleles": {
+                "ermB": {
+                    "drug": "Macrolide/Clindamycin"
+                }
+            }
+        },
+        "aph": {
+            "alleles": {
+                "aphA": {
+                    "drug": "Aminoglycoside"
+                }
+            }
+        },
+        "AAC": {
+            "drug": "Aminoglycoside"
+        },
+        "pCD": {
+            "drug": "Metronidazole"
+        },
+        "gyr": {
+            "alleles": {
+                "gyrA": {
+                    "mutation": {
+                        "T821": {
+                            "drug": "Quinolone/Fluoroquinolone"
+                        }
+                    }
+                },
+                "gyrB": {
+                    "mutation": {
+                        "D426N": {
+                            "drug": "Quinolone/Fluoroquinolone"
+                        }
+                    }
+                }
+            }
+        },
+        "rpo": {
+            "alleles": {
+                "rpoC": {
+                    "mutation": {
+                        "V1143F": {
+                            "drug": "Fidaxomicin"
+                        },
+                        "V1143G": {
+                            "drug": "Fidaxomicin"
+                        },
+                        "V1143L": {
+                            "drug": "Fidaxomicin"
+                        },
+                        "Q1074K": {
+                            "drug": "Fidaxomicin"
+                        },
+                        "D237Y": {
+                            "drug": "Fidaxomicin"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
