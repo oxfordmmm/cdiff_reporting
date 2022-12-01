@@ -9,8 +9,6 @@ import jsonschema
 import csv
 import re
 
-import utils
-
 def process_AMR_args(parser):
     parser.add_argument('-c', '--catalogue', required=True,
                             help='Path to resistance catalogue')
@@ -24,6 +22,37 @@ def process_AMR_args(parser):
                             help='Path to output json')
     return parser
 
+def initialise_resistance_dict(catalogue:dict):
+    drug_resistances = dict()
+    for drug in catalogue["drugs"]:
+        drug_resistances[drug] = {
+            "resistance":"S",
+            "evidence": []
+        }
+    return drug_resistances
+
+def search_catalogue(catalogue:dict, feature_list:set, drug_resistances:dict):
+    for gene, gene_value in catalogue["genes"].items():
+        gene_regex = fr"{gene}"
+        for feature in feature_list:
+            if re.search(gene_regex, feature):
+                if "alleles" in gene_value:
+                    for allele, allele_value in gene_value["alleles"].items():
+                        allele_regex = fr"{allele}"
+                        if re.search(allele_regex, feature):
+                            if "mutations" in allele_value:
+                                for mutation, mutation_value in allele_value["mutations"].items():
+                                    mutation_regex = fr"{mutation}"
+                                    if re.search(mutation_regex, feature):
+                                        drug_resistances[mutation_value["drug"]]["resistance"] = "R"
+                                        drug_resistances[mutation_value["drug"]]["evidence"].append(feature)
+                            else:
+                                drug_resistances[allele_value["drug"]]["resistance"] = "R"
+                                drug_resistances[allele_value["drug"]]["evidence"].append(feature)
+                else:
+                    drug_resistances[gene_value["drug"]]["resistance"] = "R"
+                    drug_resistances[gene_value["drug"]]["evidence"].append(feature)
+    return drug_resistances
 
 def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file: str, schema_file:str, output_json:str):
     # load JSON catalogue
@@ -66,27 +95,9 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
             for line in reader:
                 amr_finder_list.add(line[5])
     
-    drug_resistances = dict()
-    for drug in catalogue["drugs"]:
-        drug_resistances[drug] = "S"
-
-    for gene, gene_value in catalogue["genes"].items():
-        gene_regex = fr"{gene}"
-        for feature in blast_list:
-            if re.search(gene_regex, feature):
-                if "alleles" in gene_value:
-                    for allele, allele_value in gene_value["alleles"].items():
-                        allele_regex = fr"{allele}"
-                        if re.search(allele_regex, feature):
-                            if "mutations" in allele_value:
-                                for mutation, mutation_value in allele_value["mutations"].items():
-                                    mutation_regex = fr"{mutation}"
-                                    if re.search(mutation_regex, feature):
-                                        drug_resistances[mutation_value["drug"]] = "R"
-                            else:
-                                drug_resistances[allele_value["drug"]] = "R"
-                else:
-                    drug_resistances[gene_value["drug"]] = "R"
+    drug_resistances = initialise_resistance_dict(catalogue)
+    drug_resistances = search_catalogue(catalogue, blast_list, drug_resistances)
+    drug_resistances = search_catalogue(catalogue, amr_finder_list, drug_resistances)
 
     # Serializing and outputting json
     drug_json = json.dumps(drug_resistances, indent=4)
