@@ -27,7 +27,8 @@ def initialise_resistance_dict(catalogue:dict):
     for drug in catalogue["drugs"]:
         drug_resistances[drug] = {
             "resistance":"S",
-            "evidence": []
+            "evidence_resistance": [],
+            "evidence_sensitive": []
         }
     return drug_resistances
 
@@ -45,13 +46,47 @@ def search_catalogue(catalogue:dict, feature_list:set, drug_resistances:dict):
                                     mutation_regex = fr"{mutation}"
                                     if re.search(mutation_regex, feature):
                                         drug_resistances[mutation_value["drug"]]["resistance"] = "R"
-                                        drug_resistances[mutation_value["drug"]]["evidence"].append(feature)
+                                        drug_resistances[mutation_value["drug"]]["evidence_resistance"].append(feature)
                             else:
                                 drug_resistances[allele_value["drug"]]["resistance"] = "R"
-                                drug_resistances[allele_value["drug"]]["evidence"].append(feature)
+                                drug_resistances[allele_value["drug"]]["evidence_resistance"].append(feature)
                 else:
                     drug_resistances[gene_value["drug"]]["resistance"] = "R"
-                    drug_resistances[gene_value["drug"]]["evidence"].append(feature)
+                    drug_resistances[gene_value["drug"]]["evidence_resistance"].append(feature)
+    return drug_resistances
+
+def consolidate_sensitive_evidence(drug_resistances:dict, catalogue: dict):
+    for gene, gene_value in catalogue["genes"].items():
+        if "alleles" in gene_value:
+            for allele, allele_value in gene_value["alleles"].items():
+                if "mutations" in allele_value:
+                    for mutation, mutation_value in allele_value["mutations"].items():
+                        mutation_regex = fr"{mutation}"
+                        found = False
+                        for entry in drug_resistances[mutation_value["drug"]]["evidence_resistance"]:
+                            if re.search(mutation_regex, entry):
+                                found = True
+                        
+                        if not found:
+                            drug_resistances[mutation_value["drug"]]["evidence_sensitive"].append(f"{allele} - {mutation}")
+                else:
+                    allele_regex = fr"{allele}"
+                    found = False
+                    for entry in drug_resistances[allele_value["drug"]]["evidence_resistance"]:
+                        if re.search(allele_regex, entry):
+                            found = True
+                    
+                    if not found:
+                        drug_resistances[allele_value["drug"]]["evidence_sensitive"].append(allele)
+        else:
+            gene_regex = fr"{gene}"
+            found = False
+            for entry in drug_resistances[gene_value["drug"]]["evidence_resistance"]:
+                if re.search(gene_regex, entry):
+                    found = True
+            
+            if not found:
+                drug_resistances[gene_value["drug"]]["evidence_sensitive"].append(gene)
     return drug_resistances
 
 def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file: str, schema_file:str, output_json:str):
@@ -92,12 +127,14 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
         with open(amr_finder_output_tsv) as file:
             reader = csv.reader(file, delimiter="\t")
             # build set of mutations
+            next(reader)
             for line in reader:
                 amr_finder_list.add(line[5])
     
     drug_resistances = initialise_resistance_dict(catalogue)
     drug_resistances = search_catalogue(catalogue, blast_list, drug_resistances)
     drug_resistances = search_catalogue(catalogue, amr_finder_list, drug_resistances)
+    drug_resistances = consolidate_sensitive_evidence(drug_resistances, catalogue)
 
     # Serializing and outputting json
     drug_json = json.dumps(drug_resistances, indent=4)
