@@ -2,7 +2,7 @@
  
 from fpdf import FPDF
 import json
-#import pandas as pd
+import pandas as pd
 import numpy as np
 
 
@@ -21,9 +21,11 @@ def simple_table(spacing=1):
     print(tsv)
    
 #Read in QC stats in JSON
-    with open('amr.json') as f:
-        data = json.load(f) 
-    print(data)
+    #data = pd.read_json('ERR3274281_resistance.json')
+    pd.set_option('display.max_colwidth', None)
+    data_df = pd.read_json('ERR3274281_resistance.json').transpose()
+    data_df.index.names = ['Drug']
+    print(data_df)
 
 #Append logos
     WIDTH = 210
@@ -71,12 +73,15 @@ def simple_table(spacing=1):
 
     pdf.set_font("Times", size=14)
     pdf.set_text_color(0,0,0)
-    col_width = pdf.w
+    #pdf.multi_cell(w=200, h=5, txt = str(data_df))
+    epw = pdf.w - 2*pdf.l_margin
+ 
     row_height = pdf.font_size
-    for key, value in data.items():
-        pdf.multi_cell(col_width, row_height*spacing,
-                txt="{}\t\t\t{}".format(key, value))
-    pdf.ln(10)
+    for row in data_df.index:
+        pdf.cell(epw/3, row_height, str(row), border=1, ln=0)
+        pdf.cell(epw/6, row_height, str(data_df['resistance'][row]), border=1, ln=0)
+        pdf.cell(3*(epw/6), row_height, str(data_df['evidence_resistance'][row]), border=1, ln=1)
+        pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border=1, ln=1)
     
 #Save to PDF
     
