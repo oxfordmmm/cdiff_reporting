@@ -31,9 +31,6 @@
         "AAC": {
             "drug": "Aminoglycoside"
         },
-        "pCD": {
-            "drug": "Metronidazole"
-        },
         "gyr": {
             "alleles": {
                 "gyrA": {
