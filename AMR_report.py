@@ -103,17 +103,17 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, output_pdf:str):
  
     row_height = pdf.font_size
     pdf.set_font("Times", "B", size=14)
-    pdf.cell(epw/3, row_height, "Drug", ln=0)
-    pdf.cell(pdf.font_size * 3, row_height, "S/R", ln=0)
-    pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, "Evidence of Resistance", ln=1)
-    pdf.cell(epw, row_height, "Evidence of Sensitivity", ln=1)
+    pdf.cell(epw/3, row_height, "Drug", border="TL", ln=0)
+    pdf.cell(pdf.font_size * 3, row_height, "S/R", border="T", ln=0)
+    pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, "Evidence of Resistance", border="TR", ln=1)
+    pdf.cell(epw, row_height, "Evidence of Sensitivity", border="BLR", ln=1)
 
     pdf.set_font("Times", size=14)
     for row in data_df.index:
-        pdf.cell(epw/3, row_height, str(row), ln=0)
-        pdf.cell(pdf.font_size * 3, row_height, str(data_df['resistance'][row]), ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, str(data_df['evidence_resistance'][row]), ln=1)
-        pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), ln=1)
+        pdf.cell(epw/3, row_height, str(row), border="TL", ln=0)
+        pdf.cell(pdf.font_size * 3, row_height, str(data_df['resistance'][row]), border="T", ln=0)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, str(data_df['evidence_resistance'][row]), border="TR", ln=1)
+        pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border="BLR", ln=1)
     
 #Save to PDF
     try:
