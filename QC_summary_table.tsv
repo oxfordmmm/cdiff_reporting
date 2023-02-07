@@ -1,0 +1,8 @@
+
+Metric			Expected value			Actual value			Quality
+Total Sequences			1.0-20.0 M			2469574			Pass
+Sequence length (bp)			50-150M			93			Pass
+%GC			27.9-29.20			29			Pass
+Total assembly size (bp)			3.9-4.5			4191331			Pass
+Largest contig (bp)			NA			394786			NA
+N50 (bp)			NA			117475			NA

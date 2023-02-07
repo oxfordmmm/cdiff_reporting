@@ -11,13 +11,13 @@ open(qc, $fqc);
 open(qt, $qst);
 
 $outqc = "QC_summary_table.tsv";
-$sample = "sample_name.tsv";
+#$sample = "sample_name.tsv";
 
-system("echo Sample Name\t$fqc | cut -f 1 -d '.' ");
+#system("echo Sample Name\t$fqc | cut -f 1 -d '.' ");
 #system("echo Sample Name\t$fqc | cut -f 1 -d '.' >> $outqc");
 
 open(outqc, '>>', $outqc);
-open(sample, '>', $sample);
+#open(sample, '>', $sample);
 
 #print outqc "Sequence Quality\n";
 print "\nGENOME QUALITY STATS\n";
@@ -36,14 +36,14 @@ while(<qc>){
         for $n (0..$#fname){}
         $fname[1] =~ s/\_raw\_reads\.fastq\.gz//g;
         #print sample "Sample details\n";
-        print sample "Specimen identifier:\t\t$fname[1]\t\t\t\tCollection date:\t\t$date\n";
-        print sample "Sequence GUUID:\t\t$fname[1]\t\tSequencing date:\t\t$date\n";
-        print sample "Sequence plate name:\t\t$fname[1]\t\t\t\tReport date:\t\t$date\n";
+        #print sample "Specimen identifier:\t\t$fname[1]\t\t\t\tCollection date:\t\t$date\n";
+        #print sample "Sequence GUUID:\t\t$fname[1]\t\tSequencing date:\t\t$date\n";
+        #print sample "Sequence plate name:\t\t$fname[1]\t\t\t\tReport date:\t\t$date\n";
     }
     if ($f =~ /Total Sequences/){
         @seqs = split/\t/,$f;
         for $s (0..$#seqs){}
-        if ($seqs[1] == 1000000 && $seqs[1] < 20000000 && $seqs[1] == 20000000){
+        if ($seqs[1] == 1000000 | $seqs[1] < 20000000 | $seqs[1] == 20000000){
             print "Total Sequences\t1.0-20.0 M\t$seqs[1]\tPass\n";
             print outqc "Total Sequences\t\t\t1.0-20.0 M\t\t\t$seqs[1]\t\t\tPass\n";
         }
@@ -55,7 +55,7 @@ while(<qc>){
     if ($f =~ /\%GC/){
         @gc = split/\t/,$f;
         for $g (0..$#gc){}
-        if ($gc[1] == 27.9 && $gc[1] < 29.2 && $gc[1] == 29.2){
+        if ($gc[1] == 27.9 | $gc[1] < 29.2 | $gc[1] == 29.2){
             print "%GC\t27.9-29.20\t$gc[1]\tPass\n";
             print outqc "%GC\t\t\t27.9-29.20\t\t\t$gc[1]\t\t\tPass\n";
         }
@@ -94,7 +94,7 @@ while(<qt>){
     if ($q =~ "Total length" && $q =~ "(>= 0 bp)"){
         @gnom = split/\t/,$q;
         for $m (0..$#gnom){}
-        if ($gnom[1] == 3900000 && $gnom[1] < 4500000 && $gnom[1] == 4500000){
+        if ($gnom[1] == 3900000 | $gnom[1] < 4500000 | $gnom[1] == 4500000){
             print "Total assembly size (bp)\t3.9-4.5\t$gnom[1]\tPass\n";
             print outqc "Total assembly size (bp)\t\t\t3.9-4.5\t\t\t$gnom[1]\t\t\tPass\n";
         }
@@ -130,7 +130,7 @@ while(<qt>){
 }
 print "\n\n";
 
-close(sample);
+#close(sample);
 
 close(qt);
 
