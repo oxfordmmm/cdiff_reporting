@@ -5,6 +5,7 @@ from fpdf import FPDF
 import pandas as pd
 import logging
 from pathlib import Path
+import csv
 
 def amr_report_args(parser):
     parser.add_argument('-s', '--sample_tsv', required=True,
@@ -20,39 +21,6 @@ def amr_report_args(parser):
     return parser
 
 def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, output_pdf:str):
-    #Sample name
-    try:
-        with open(sample_tsv) as h:
-            sample = h.readlines()
-        sample_name_str = ("").join(sample)
-    except IOError as e:
-        logging.error(f"Error opening sample TSV {sample_tsv}")
-        logging.error(e)
-        exit(1)
-
-    #print(name)
-
-    #Read in QC stats in TSV
-    try:
-        with open(qc_tsv) as g:
-            lines = g.readlines()
-        qc_tsv_str = ("").join(lines)
-    except IOError as e:
-        logging.error(f"Error opening QC TSV {qc_tsv}")
-        logging.error(e)
-        exit(1)
-    #print(tsv)
-
-    #Read in relatedness TSV
-    try:
-        with open(relatedness_tsv) as g:
-            lines = g.readlines()
-        relatedness_tsv_str = ("").join(lines)
-    except IOError as e:
-        logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")
-        logging.error(e)
-        exit(1)
-
     #Read in AMR data in JSON
     try:
         pd.set_option('display.max_colwidth', None)
@@ -64,7 +32,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         exit(1)
     #print(data_df)
 
-#Append logos
+    #Append logos
     WIDTH = 210
     #HEIGHT = 297
     pdf = FPDF()
@@ -73,44 +41,77 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.image('data/leeds.jpg', x=120, y=WIDTH/9.5, w=80)
     pdf.ln(30)  # move 30 down
 
-#Show poject title
+    #Show poject title
     pdf.set_font("Times", "B", size=17)
     pdf.ln(10)  # move 10 down
     pdf.cell(w=0, h=5, txt="Clostridioides difficile Sequence Analysis Report", align = "L", ln=2)
     pdf.ln(5)
 
-#Show sample details
+    #Show sample details
     pdf.set_font("Times", "B", size=14)
     pdf.set_text_color(0,0,200) #blue
-    pdf.ln(15)  # move 10 down
     pdf.cell(w=0, h=5, txt="Sample details", align = "L", ln=2)
-    pdf.ln(10)
+    pdf.ln(1)
 
-    pdf.set_font("Times", size=14)
+    #pdf.set_font("Times", size=14)
     pdf.set_text_color(0,0,0)
-    pdf.multi_cell(w=200, h=5, txt = sample_name_str)
-    pdf.ln(10)
 
-#Append QC stats
+    try:
+        with open(sample_tsv) as file:
+            sample_name_tsv = csv.reader(file, delimiter="\t")
+            
+            for line in sample_name_tsv:
+                while("" in line):
+                    line.remove("")
+                
+                pdf.set_font("Times", "B", size=14)
+                pdf.cell(w=50, h=5, txt = line[0], border="TBL")
+                pdf.set_font("Times", size=14)
+                pdf.cell(w=40, h=5, txt = line[1], border="TB")
+                pdf.set_font("Times", "B", size=14)
+                pdf.cell(w=50, h=5, txt = line[2], border="TB")
+                pdf.set_font("Times", size=14)
+                pdf.cell(w=40, h=5, txt = line[3], ln=1, border="TBR")
+            pdf.ln(10)
+    except Exception as e:
+        logging.error(f"Error opening sample TSV {sample_tsv}")
+        logging.error(e)
+        exit(1)
+
+    #Append QC stats
     pdf.set_font("Times", "B", size=14)
     pdf.set_text_color(0,0,200) #blue
     pdf.cell(w=0, h=5, txt="Sequencing Quality Stats", align = "L", ln=2)
     
-    pdf.set_font("Times", size=14)
     pdf.set_text_color(0,0,0)
-    pdf.multi_cell(w=200, h=5, txt = qc_tsv_str)
+    #Read in QC stats in TSV
+    try:
+        with open(qc_tsv) as file:
+            qc_tsv_reader = csv.reader(file, delimiter="\t")
+            for i, line in enumerate(qc_tsv_reader):
+                while("" in line):
+                    line.remove("")
+                
+                pdf.cell(w=60, h=5, txt = line[0], border="TBL")
+                pdf.cell(w=40, h=5, txt = line[1], border="TB")
+                pdf.cell(w=30, h=5, txt = line[2], border="TB")
+                pdf.cell(w=30, h=5, txt = line[3], border="TBR", ln=1)
+                pdf.set_font("Times", size=14)
+    except IOError as e:
+        logging.error(f"Error opening QC TSV {qc_tsv}")
+        logging.error(e)
+        exit(1)
+
     pdf.ln(10)
 
-#Append AMR Profile
+    #Append AMR Profile
     pdf.set_font("Times", "B", size=14)
     pdf.set_text_color(0,0,200) #blue
-    pdf.cell(w=0, h=5, txt="Antimicrobial Resistance Profile", align = "L", ln=2)
+    pdf.cell(w=0, h=5, txt="Antimicrobial Resistance Profile", align = "L", ln=1)
     pdf.set_font("Times", size=14)
-    pdf.ln(10)
 
     pdf.set_font("Times", size=14)
     pdf.set_text_color(0,0,0)
-    #pdf.multi_cell(w=200, h=5, txt = str(data_df))
     epw = pdf.w - 2*pdf.l_margin
  
     row_height = pdf.font_size
@@ -118,7 +119,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.cell(epw/3, row_height, "Drug", border="TL", ln=0)
     pdf.cell(pdf.font_size * 3, row_height, "S/R", border="T", ln=0)
     pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, "Evidence of Resistance", border="TR", ln=1)
-    pdf.cell(epw, row_height, "Evidence of Sensitivity", border="BLR", ln=1)
+    pdf.cell(epw, row_height, "Catalogue features not found", border="BLR", ln=1)
 
     pdf.set_font("Times", size=14)
     for row in data_df.index:
@@ -126,18 +127,32 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         pdf.cell(pdf.font_size * 3, row_height, str(data_df['resistance'][row]), border="T", ln=0)
         pdf.cell((4*(epw/6)) - (pdf.font_size*3), row_height, str(data_df['evidence_resistance'][row]), border="TR", ln=1)
         pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border="BLR", ln=1)
-        
-        
-#Append Related samples section
+
+    #Append Related samples section
     pdf.ln(10)
     pdf.set_font("Times", "B", size=14)
     pdf.set_text_color(0,0,200) #blue
     pdf.cell(w=0, h=5, txt="Related samples", align = "L", ln=2)
-    pdf.set_font("Times", size=14)
-    pdf.ln(10)
 
+    #Read in relatedness TSV
+    pdf.set_text_color(0,0,0) #black
+    try:
+        with open(relatedness_tsv) as file:
+            relatedness_tsv_reader = csv.reader(file, delimiter="\t")
+            for line in relatedness_tsv_reader:
+                print(line)
+                while("" in line):
+                    line.remove("")
+                pdf.cell(w=100 , h=5, txt = line[0], border="TBL")
+                pdf.cell(w=40 , h=5, txt = line[1], border="TB")
+                pdf.cell(w=30 , h=5, txt = line[2], border="TBR", ln=1)
+                pdf.set_font("Times", size=14)
+    except IOError as e:
+        logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")
+        logging.error(e)
+        exit(1)
 
-#Save to PDF
+    #Save to PDF
     try:
         pdf.output(output_pdf)
     except Exception as e:
