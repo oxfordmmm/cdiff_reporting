@@ -143,9 +143,14 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
                 print(line)
                 while("" in line):
                     line.remove("")
-                pdf.cell(w=100 , h=5, txt = line[0], border="TBL")
+
+                if len(line) < 4:
+                    print(f"sample {line[0]} outside cutoff")
+                    continue
+                pdf.cell(w=90 , h=5, txt = line[0], border="TBL")
                 pdf.cell(w=40 , h=5, txt = line[1], border="TB")
-                pdf.cell(w=30 , h=5, txt = line[2], border="TBR", ln=1)
+                pdf.cell(w=30 , h=5, txt = line[2], border="TB")
+                pdf.cell(w=30 , h=5, txt = line[3], border="TBR", ln=1)
                 pdf.set_font("Times", size=14)
     except IOError as e:
         logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")
