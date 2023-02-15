@@ -1,1 +1,9 @@
+attrs
+fpdf
 jsonschema
+numpy
+pandas
+pyrsistent
+python-dateutil
+pytz
+six

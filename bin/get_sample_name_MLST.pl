@@ -4,7 +4,7 @@
 use Time::Piece;
 
 $raw = $ARGV[0];
-$sample = "sample_name.tsv";
+$sample = $ARGV[1];
 
 open(in, $raw);
 open(sample, '>', $sample);

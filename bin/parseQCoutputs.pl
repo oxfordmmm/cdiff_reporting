@@ -10,7 +10,7 @@ $qst = $ARGV[1]; #Quast output
 open(qc, $fqc);
 open(qt, $qst);
 
-$outqc = "QC_summary_table.tsv";
+$outqc = $ARGV[2];
 #$sample = "sample_name.tsv";
 
 #system("echo Sample Name\t$fqc | cut -f 1 -d '.' ");
@@ -20,6 +20,7 @@ open(outqc, '>>', $outqc);
 #open(sample, '>', $sample);
 
 #print outqc "Sequence Quality\n";
+
 print "\nGENOME QUALITY STATS\n";
 print "\nMetric\tExpected value\tActual value\tQuality\n\n";
 print outqc "Metric\tExpected value\tActual value\tQuality\n";

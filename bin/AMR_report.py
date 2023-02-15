@@ -60,18 +60,20 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         with open(sample_tsv) as file:
             sample_name_tsv = csv.reader(file, delimiter="\t")
             
-            for line in sample_name_tsv:
+            for i, line in enumerate(sample_name_tsv):
                 while("" in line):
                     line.remove("")
                 
-                pdf.set_font("Times", "B", size=14)
-                pdf.cell(w=50, h=5, txt = line[0], border="TBL")
-                pdf.set_font("Times", size=14)
-                pdf.cell(w=40, h=5, txt = line[1], border="TB")
-                pdf.set_font("Times", "B", size=14)
-                pdf.cell(w=50, h=5, txt = line[2], border="TB")
-                pdf.set_font("Times", size=14)
-                pdf.cell(w=40, h=5, txt = line[3], ln=1, border="TBR")
+                if i == 0:
+                    pdf.set_font("Times", "B", size=14)
+                    pdf.cell(w=40, h=5, txt = line[0], border="TBL")
+                    pdf.cell(w=60, h=5, txt = line[1], border="TB")
+                    pdf.cell(w=60, h=5, txt = line[2], border="TBR", ln=1)
+                else:
+                    pdf.set_font("Times", size=14)
+                    pdf.cell(w=40, h=5, txt = line[0], border="TBL")
+                    pdf.cell(w=60, h=5, txt = line[1], border="TB")
+                    pdf.cell(w=60, h=5, txt = line[2], border="TBR", ln=1)
             pdf.ln(10)
     except Exception as e:
         logging.error(f"Error opening sample TSV {sample_tsv}")
