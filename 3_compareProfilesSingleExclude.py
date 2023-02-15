@@ -41,7 +41,7 @@ def compareHash(input_hash, compareOut, hash_folder, distance_cutoff, min_distan
 		diff = len([True for l1,l2 in zip(a1,a2) if l1 and l2 and l1!=l2])
 		
 		if diff < distance_cutoff:
-			if compared>min_distance_cutoff:
+			if diff>min_distance_cutoff:
 				ratio = "%0.3f"%(diff/compared)
 			else:
 				ratio = ""
