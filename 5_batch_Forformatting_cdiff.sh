@@ -18,11 +18,11 @@ python3 2_process_AMR_profiles.py -c data/AMR_catalogue.json \
 #relatedness
 python3 3_compareProfilesSingleExclude.py -f /mnt/scratch_2/output/out1_230125_VL00165_24_AACHJTHM5/cgmlst/ \
 -i /mnt/scratch_2/output/out1_230125_VL00165_24_AACHJTHM5/cgmlst/$genome\_cgmlst.json \
--d 100 \
+-d 50 \
 -o $genome\_cgmlst_comparisons.tsv
 #final report
-python3 4_create_Cdiff_report.py -s sample_name.tsv \
--q QC_summary_table.tsv -a $genome\_resistance_report.json \
--r $genome\_cgmlst_comparisons.tsv \
--o $genome\_out_report.pdf
+#python3 4_create_Cdiff_report.py -s sample_name.tsv \
+#-q QC_summary_table.tsv -a $genome\_resistance_report.json \
+#-r $genome\_cgmlst_comparisons.tsv \
+#-o $genome\_out_report.pdf
 done
