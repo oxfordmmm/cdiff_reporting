@@ -100,7 +100,7 @@ while(<qt>){
         }
         else {
             print "Total assembly size (bp)\t3.9-4.5\t$gnom[1]\tFail\n";
-            print outqc "Total assembly size (bp)\t3.9-4.5\t$gnom[1]\tFail\n";
+            print outqc "Total assembly size (bp)\t3.9-4.5 Mbp\t$gnom[1]\tFail\n";
         }
     }
     if ($q =~ "Largest contig"){
