@@ -45,12 +45,14 @@ while(<qc>){
         @seqs = split/\t/,$f;
         for $s (0..$#seqs){}
         if ($seqs[1] == 1000000 | $seqs[1] < 20000000 | $seqs[1] == 20000000){
-            print "Total Sequences\t1.0-20.0 M\t$seqs[1]\tPass\n";
-            print outqc "Total Sequences\t1.0-20.0 M\t$seqs[1]\tPass\n";
+            $seqs[1] = sprintf("%.2f", $seqs[1]/1000000); 
+            print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
+            print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
         }
         else {
-            print "Total Sequences\t1.0-20.0 M\t$seqs[1]\tFail\n";
-            print outqc "Total Sequences\t1.0-20.0 M\t$seqs[1]\tFail\n";
+            $seqs[1] = sprintf("%.2f", $seqs[1]/1000000); 
+            print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
+            print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
         }
     }
     if ($f =~ /\%GC/){
@@ -75,12 +77,12 @@ while(<qc>){
         $mean = ($seqlen[0] + $seqlen[1])/2;
         #print "$mean**\n";
         if ($mean > 50 | $len[1] > 150){
-            print "Sequence length (bp)\t50-150M\t$mean\tPass\n";
-            print outqc "Sequence length (bp)\t50-150M\t$mean\tPass\n";
+            print "Sequence length (bp)\t50-150\t$mean\tPass\n";
+            print outqc "Sequence length (bp)\t50-150\t$mean\tPass\n";
         }
         else {
-            print "Sequence length (bp)\t50-150M\t$len[1]\tFail\n";
-            print outqc "Sequence length (bp)\t50-150M\t$len[1]\tFail\n";
+            print "Sequence length (bp)\t50-150\t$len[1]\tFail\n";
+            print outqc "Sequence length (bp)\t50-150\t$len[1]\tFail\n";
         }
     }
 
@@ -96,25 +98,29 @@ while(<qt>){
         @gnom = split/\t/,$q;
         for $m (0..$#gnom){}
         if ($gnom[1] == 3900000 | $gnom[1] < 4500000 | $gnom[1] == 4500000){
-            print "Total assembly size (bp)\t3.9-4.5 Mbp\t$gnom[1]\tPass\n";
-            print outqc "Total assembly size (bp)\t3.9-4.5 Mbp\t$gnom[1]\tPass\n";
+            $gnom[1] = sprintf("%.2f", $gnom[1]/1000000); 
+            print "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
+            print outqc "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
         }
         else {
-            print "Total assembly size (bp)\t3.9-4.5\t$gnom[1]\tFail\n";
-            print outqc "Total assembly size (bp)\t3.9-4.5 Mbp\t$gnom[1]\tFail\n";
+            $gnom[1] = sprintf("%.2f", $gnom[1]/1000000); 
+            print "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tFail\n";
+            print outqc "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tFail\n";
         }
     }
     if ($q =~ "Largest contig"){
         @con = split/\t/,$q;
         for $c (0..$#con){}
-        print  "Largest contig (bp)\tNA\t$con[1]\tNA\n";
-        print outqc  "Largest contig (bp)\tNA\t$con[1]\tNA\n";
+        $con[1] = sprintf("%.2f", $con[1]/1000);
+        print  "Largest contig (Kbp)\tNA\t$con[1]\tNA\n";
+        print outqc  "Largest contig (Kbp)\tNA\t$con[1]\tNA\n";
     }
     if ($q =~ "N50"){
         @nfifty = split/\t/,$q;
         for $s (0..$#nfifty){}
-        print "N50 (bp)\tNA\t$nfifty[1]\tNA\n";
-        print outqc "N50 (bp)\tNA\t$nfifty[1]\tNA\n";
+        $nfifty[1] = sprintf("%.2f", $nfifty[1]/1000);
+        print "N50 (Kbp)\tNA\t$nfifty[1]\tNA\n";
+        print outqc "N50 (Kbp)\tNA\t$nfifty[1]\tNA\n";
     }
     if ($q =~ /\%GC/){
         @gc = split/\t/,$q;
