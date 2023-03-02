@@ -1,6 +1,7 @@
 SOURCE_DIR="${PWD}/sample_data"
 OUTPUT_DIR="${PWD}/sample_data/report"
 CGMLST_DIR="${PWD}/sample_data/cgmlst"
+DATA_DIR="${PWD}/data"
 
 if [ -f "$OUTPUT_DIR" ]
 then 
@@ -17,7 +18,7 @@ for genome in $(cat ${OUTPUT_DIR}/processed_genomes.tsv)
 do
     #rm QC_summary_table.tsv
     #sample details eg name, mlst
-    perl bin/get_sample_name_MLST.pl "${SOURCE_DIR}/mlst/${genome}_ST.tsv" "${OUTPUT_DIR}/${genome}_name.tsv"
+    perl bin/get_sample_name_MLST.pl "${SOURCE_DIR}/mlst/${genome}_ST.tsv" "${OUTPUT_DIR}/${genome}_name.tsv" "${DATA_DIR}/LookUpTable_ST_RT.tsv"
     #qc
     perl bin/parseQCoutputs.pl "${SOURCE_DIR}/raw_fastqc_single/${genome}_raw_reads_fastqc/${genome}.txt" "${SOURCE_DIR}/quast/${genome}_Quastreport.tsv" "${OUTPUT_DIR}/${genome}_QC_summary_table.tsv"
     #amr profile
