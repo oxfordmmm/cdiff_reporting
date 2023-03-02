@@ -29,9 +29,10 @@ while(<in>){
 }
 open(ribo, $ribo);
 
-print "Report date\tSpecimen identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
-print sample "Report date\tSpecimen identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
+print "Report date\tSpecimen Identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
+print sample "Report date\tSpecimen Identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
 
+$found = 0;
 while(<ribo>){
     chomp;
     $r = $_;
@@ -40,17 +41,20 @@ while(<ribo>){
     for $rt (0..$#rt){}
     #print "$rt[10]\n";
     #print "$fname[2]++\n";
+    #print "fname[2] = $fname[2]\n";
     if ($fname[2] == $rt[0]){
+        $found = 1;
         #print "$rt[0]\t$fname[2]\t$rt[1]\n";
         #print "$date\t$fname[0]\t$fname[2]\t$rt[10]\t\t\n";
-        print "$date\t$fname[0]\t$fname[2]\t$rt[1]\t\t\n";
-        print sample "$date\t$fname[0]\t$fname[2]\t$rt[1]\t\t\n";    
-    }   
-    else {
-        #print "no match\n";
+        print "$date\t$fname[0]\t$fname[2]\t$rt[1]\tNone\tNone\n";
+        print sample "$date\t$fname[0]\t$fname[2]\t$rt[1]\tNone\tNone\n";    
     }
 }
 
+if (!$found) {
+    print "$date\t$fname[0]\t$fname[2]\tNone\tNone\tNone\n";
+    print sample "$date\t$fname[0]\t$fname[2]\tNone\tNone\tNone\n";
+}
 
 close(ribo);
 close(in);
