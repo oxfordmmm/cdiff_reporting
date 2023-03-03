@@ -90,7 +90,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
             pdf.cell(w=10, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
             # Ribotype
             pdf.set_font("Helvetica", "B", size=12)
-            pdf.cell(w=20, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
+            pdf.cell(w=50, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
             pdf.set_font("Helvetica", size=12)
             pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
             # Pipeline version
@@ -119,10 +119,10 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
                 while("" in line):
                     line.remove("")
                 
-                pdf.cell(w=60, h=5, txt = line[0], border="TBL")
-                pdf.cell(w=40, h=5, txt = line[1], border="TB")
-                pdf.cell(w=30, h=5, txt = line[2], border="TB")
-                pdf.cell(w=30, h=5, txt = line[3], border="TBR", ln=1)
+                pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
+                pdf.cell(w=40, h=5, txt = line[1], align = "R", border="TB")
+                pdf.cell(w=30, h=5, txt = line[2], align = "R", border="TB")
+                pdf.cell(w=30, h=5, txt = line[3], align = "C", border="TBR", ln=1)
                 pdf.set_font("Helvetica", size=12)
     except IOError as e:
         logging.error(f"Error opening QC TSV {qc_tsv}")
