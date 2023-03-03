@@ -52,9 +52,9 @@ def compareHash(input_hash, compareOut, hash_folder, distance_cutoff, min_distan
 					index = bisect.bisect_left([i[2] for i in closest_samples], sample[2])
 					if index < min_number_of_samples:
 						closest_samples.insert(index, sample)
-					else:
-						closest_samples = [sample]
-					inserted = True
+				else:
+					closest_samples = [sample]
+				inserted = True
 			
 			if inserted and len(closest_samples) > min_number_of_samples:
 				while len(closest_samples) > min_number_of_samples:
