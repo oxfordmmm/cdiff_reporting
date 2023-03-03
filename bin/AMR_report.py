@@ -60,34 +60,40 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         with open(sample_tsv) as file:
             #sample_name_tsv = csv.reader(file, delimiter="\t")
             sample_name_tsv_df = pd.read_csv(file, sep = '\t')
-            print(sample_name_tsv_df)
 
+            # Specimen Identifier
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[1], border="TBL")
             pdf.set_font("Helvetica", size=12)
-            pdf.cell(w=60, h=5, txt = sample_name_tsv_df[sample_name_tsv_df.columns[1]][0], border="TBR")
+            pdf.cell(w=60, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[1]][0]), border="TBR")
+            # Soruce Hospital
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[5], border="TB")
             pdf.set_font("Helvetica", size=12)
             pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[5]][0]), border="TBR", ln=1)
     
+            # Report date
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[0], border="TBL")
             pdf.set_font("Helvetica", size=12)
-            pdf.cell(w=60, h=5, txt = sample_name_tsv_df[sample_name_tsv_df.columns[0]][0], border="TBR")
+            pdf.cell(w=60, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[0]][0]), border="TBR")
+            # Collection Date
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[4], border="TB")
             pdf.set_font("Helvetica", size=12)
             pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[4]][0]), border="TBR", ln=1)
 
+            # MLST
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=20, h=5, txt = sample_name_tsv_df.columns[2], border="TBL")
             pdf.set_font("Helvetica", size=12)
             pdf.cell(w=10, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
+            # Ribotype
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=20, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
             pdf.set_font("Helvetica", size=12)
-            pdf.cell(w=50, h=5, txt = sample_name_tsv_df[sample_name_tsv_df.columns[3]][0], border="TBR")
+            pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
+            # Pipeline version
             pdf.set_font("Helvetica", "B", size=12)
             pdf.cell(w=40, h=5, txt = "Pipeline Version", border="TB")
             pdf.set_font("Helvetica", size=12)
@@ -185,7 +191,6 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         with open(relatedness_tsv) as file:
             relatedness_tsv_reader = csv.reader(file, delimiter="\t")
             for line in relatedness_tsv_reader:
-                print(line)
                 while("" in line):
                     line.remove("")
 

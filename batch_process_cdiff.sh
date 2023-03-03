@@ -30,7 +30,8 @@ do
     #relatedness
     python3 bin/compareProfilesSingleExclude.py -f "${CGMLST_DIR}" \
     -i "${SOURCE_DIR}/cgmlst/${genome}_cgmlst.json" \
-    -d 100 \
+    -d 20 \
+    -n 3 \
     -o "${OUTPUT_DIR}/${genome}_cgmlst_comparisons.tsv"
     #final report
     python3 bin/AMR_report.py -s "${OUTPUT_DIR}/${genome}_name.tsv" \
