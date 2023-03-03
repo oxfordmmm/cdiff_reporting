@@ -45,12 +45,12 @@ while(<qc>){
         @seqs = split/\t/,$f;
         for $s (0..$#seqs){}
         if ($seqs[1] == 1000000 | $seqs[1] < 20000000 | $seqs[1] == 20000000){
-            $seqs[1] = sprintf("%.2f", $seqs[1]/1000000); 
+            $seqs[1] = sprintf("%.1f", $seqs[1]/1000000); 
             print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
             print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
         }
         else {
-            $seqs[1] = sprintf("%.2f", $seqs[1]/1000000); 
+            $seqs[1] = sprintf("%.1f", $seqs[1]/1000000); 
             print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
             print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
         }
@@ -98,12 +98,12 @@ while(<qt>){
         @gnom = split/\t/,$q;
         for $m (0..$#gnom){}
         if ($gnom[1] == 3900000 | $gnom[1] < 4500000 | $gnom[1] == 4500000){
-            $gnom[1] = sprintf("%.2f", $gnom[1]/1000000); 
+            $gnom[1] = sprintf("%.1f", $gnom[1]/1000000); 
             print "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
             print outqc "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
         }
         else {
-            $gnom[1] = sprintf("%.2f", $gnom[1]/1000000); 
+            $gnom[1] = sprintf("%.1f", $gnom[1]/1000000); 
             print "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tFail\n";
             print outqc "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tFail\n";
         }
@@ -111,16 +111,31 @@ while(<qt>){
     if ($q =~ "Largest contig"){
         @con = split/\t/,$q;
         for $c (0..$#con){}
-        $con[1] = sprintf("%.2f", $con[1]/1000);
-        print  "Largest contig (Kbp)\tNA\t$con[1]\tNA\n";
-        print outqc  "Largest contig (Kbp)\tNA\t$con[1]\tNA\n";
+        if ($con[1] == 1000 | $con[1] < 1000000 | $con[1] == 1000000){
+            $con[1] = sprintf("%.1f", $con[1]/1000);
+            print  "Largest contig (Kbp)\t1-1000\t$con[1]\tPass\n";
+            print outqc  "Largest contig (Kbp)\t1-1000\t$con[1]\tPass\n";
+        }
+        else {
+            $con[1] = sprintf("%.1f", $con[1]/1000);
+            print  "Largest contig (Kbp)\t1-1000\t$con[1]\tFail\n";
+            print outqc  "Largest contig (Kbp)\t1-1000\t$con[1]\tFail\n";
+        }   
     }
+
     if ($q =~ "N50"){
         @nfifty = split/\t/,$q;
         for $s (0..$#nfifty){}
-        $nfifty[1] = sprintf("%.2f", $nfifty[1]/1000);
-        print "N50 (Kbp)\tNA\t$nfifty[1]\tNA\n";
-        print outqc "N50 (Kbp)\tNA\t$nfifty[1]\tNA\n";
+        if ($nfifty[1] == 100000 | $nfifty[1] < 1000000 | $nfifty[1] == 1000000){
+            $nfifty[1] = sprintf("%.1f", $nfifty[1]/1000);
+            print "N50 (Kbp)\t10-1000\t$nfifty[1]\tPass\n";
+            print outqc "N50 (Kbp)\t10-1000\t$nfifty[1]\tPass\n";
+        }
+        else {
+            $nfifty[1] = sprintf("%.1f", $nfifty[1]/1000);
+            print "N50 (Kbp)\t10-1000\t$nfifty[1]\tFail\n";
+            print outqc "N50 (Kbp)\t10-1000\t$nfifty[1]\tFail\n";
+        }
     }
     if ($q =~ /\%GC/){
         @gc = split/\t/,$q;

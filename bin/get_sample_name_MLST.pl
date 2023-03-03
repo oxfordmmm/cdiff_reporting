@@ -14,7 +14,7 @@ while(<in>){
     chomp;
     $f = $_;
     #print "$f\n";
-    $date = localtime->strftime('%d/%m/%Y'); 
+    $date = localtime->strftime('%d %B %Y'); 
     #print "$datetime\n";
     @fname = split/\s/,$f;
     for $n (0..$#fname){}
@@ -29,8 +29,8 @@ while(<in>){
 }
 open(ribo, $ribo);
 
-print "Report date\tSpecimen Identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
-print sample "Report date\tSpecimen Identifier\tMLST\tRibotype\tCollection Date\tSource Hospital\n";
+print "Report date\tSpecimen Identifier\tMLST\tEquivalent Ribotype\tCollection Date\tSource Hospital\n";
+print sample "Report date\tSpecimen Identifier\tMLST\tEquivalent Ribotype\tCollection Date\tSource Hospital\n";
 
 $found = 0;
 while(<ribo>){
