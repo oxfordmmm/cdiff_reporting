@@ -38,28 +38,29 @@ def compareHash(input_hash, compareOut, hash_folder, distance_cutoff, min_distan
 		compared = len([True for l1,l2 in zip(a1,a2) if l1 and l2])
 		diff = len([True for l1,l2 in zip(a1,a2) if l1 and l2 and l1!=l2])
 		
-		sample = (jsonList[i]['name'], compared, diff, "%0.3f"%(diff/compared))
-		if diff < distance_cutoff:
-			if diff > min_distance_cutoff:
-				if len(closest_samples) > 0:
-					closest_samples.insert(bisect.bisect_left([i[2] for i in closest_samples], sample[2]), sample)
-				else:
-					closest_samples = [sample]
-				inserted = True
-		elif min_number_of_samples > 0:
-			if len(closest_samples) > 0 and len(closest_samples) < min_number_of_samples:
-				index = bisect.bisect_left([i[2] for i in closest_samples], sample[2])
-				if index < min_number_of_samples:
-					closest_samples.insert(index, sample)
-				else:
-					closest_samples = [sample]
-				inserted = True
-		
-		if inserted and len(closest_samples) > min_number_of_samples:
-			while len(closest_samples) > min_number_of_samples:
-				if closest_samples[-1][2] < distance_cutoff:
-					break
-				closest_samples.pop()
+		if compared> 0:
+			sample = (jsonList[i]['name'], compared, diff, "%0.3f"%(diff/compared))
+			if diff < distance_cutoff:
+				if diff > min_distance_cutoff:
+					if len(closest_samples) > 0:
+						closest_samples.insert(bisect.bisect_left([i[2] for i in closest_samples], sample[2]), sample)
+					else:
+						closest_samples = [sample]
+					inserted = True
+			elif min_number_of_samples > 0:
+				if len(closest_samples) > 0 and len(closest_samples) < min_number_of_samples:
+					index = bisect.bisect_left([i[2] for i in closest_samples], sample[2])
+					if index < min_number_of_samples:
+						closest_samples.insert(index, sample)
+					else:
+						closest_samples = [sample]
+					inserted = True
+			
+			if inserted and len(closest_samples) > min_number_of_samples:
+				while len(closest_samples) > min_number_of_samples:
+					if closest_samples[-1][2] < distance_cutoff:
+						break
+					closest_samples.pop()
 
 
 	with open(compareOut, 'w') as w:
