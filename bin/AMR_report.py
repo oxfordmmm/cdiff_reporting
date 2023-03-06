@@ -85,14 +85,14 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
 
             # MLST
             pdf.set_font("Helvetica", "B", size=11)
-            pdf.cell(w=17, h=5, txt = sample_name_tsv_df.columns[2], border="TBL")
+            pdf.cell(w=15, h=5, txt = sample_name_tsv_df.columns[2], border="TBL")
             pdf.set_font("Helvetica", size=10)
-            pdf.cell(w=6, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
+            pdf.cell(w=7, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
             # Ribotype
             pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=50, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
             pdf.set_font("Helvetica", size=9)
-            pdf.cell(w=27, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
+            pdf.cell(w=28, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
             # Pipeline version
             pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = "Pipeline Version", border="TB")
