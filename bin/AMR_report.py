@@ -144,15 +144,15 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     #row_height = pdf.font_size
     pdf.set_font("Helvetica", "B", size=11)
     pdf.cell(epw/3, 5, "Drug", border="TBL", ln=0)
-    pdf.cell(pdf.font_size * 3, 5, "S/R", border="TB", ln=0)
-    pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, "Evidence of Resistance", border="TBR", ln=1)
+    pdf.cell(pdf.font_size * 3, 5, "S/R", border="TB", align = "C", ln=0)
+    pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, "Evidence of Resistance", border="TBR", align = "C", ln=1)
     #pdf.cell(epw, row_height, "Catalogue features not found", border="BLR", ln=1)
 
     pdf.set_font("Helvetica", size=11)
     for row in data_df.index:
         pdf.cell(epw/3, 5, str(row), border="TBL", ln=0)
-        pdf.cell(pdf.font_size * 3, 5, str(data_df['resistance'][row]), border="TB", ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(data_df['evidence_resistance'][row]).strip("[]"), border="TBR", ln=1)
+        pdf.cell(pdf.font_size * 3, 5, str(data_df['resistance'][row]), border="TB", align = "C", ln=0)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(data_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
         #pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
     drug_str = ["Catalogue Features not found: ", ""]
