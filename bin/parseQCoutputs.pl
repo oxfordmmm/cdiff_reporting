@@ -46,25 +46,25 @@ while(<qc>){
         for $s (0..$#seqs){}
         if ($seqs[1] == 1000000 | $seqs[1] < 20000000 | $seqs[1] == 20000000){
             $seqs[1] = sprintf("%.1f", $seqs[1]/1000000); 
-            print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
-            print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tPass\n";
+            print "Total Sequences (M)\t1-20\t$seqs[1]\tPass\n";
+            print outqc "Total Sequences (M)\t1-20\t$seqs[1]\tPass\n";
         }
         else {
             $seqs[1] = sprintf("%.1f", $seqs[1]/1000000); 
-            print "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
-            print outqc "Total Sequences (M)\t1.0-20.0\t$seqs[1]\tFail\n";
+            print "Total Sequences (M)\t1-20\t$seqs[1]\tFail\n";
+            print outqc "Total Sequences (M)\t1-20\t$seqs[1]\tFail\n";
         }
     }
     if ($f =~ /\%GC/){
         @gc = split/\t/,$f;
         for $g (0..$#gc){}
         if ($gc[1] == 27.9 | $gc[1] < 29.2 | $gc[1] == 29.2){
-            print "%GC\t27.9-29.20\t$gc[1]\tPass\n";
-            print outqc "%GC\t27.9-29.20\t$gc[1]\tPass\n";
+            print "%GC\t27.9-29.2\t$gc[1]\tPass\n";
+            print outqc "%GC\t27.9-29.2\t$gc[1]\tPass\n";
         }
         else {
-            print "%GC\t27.9-29.20\t$gc[1]\tFail\n";
-            print outqc "%GC\t27.9-29.20\t$gc[1]\tFail\n";
+            print "%GC\t27.9-29.2\t$gc[1]\tFail\n";
+            print outqc "%GC\t27.9-29.2\t$gc[1]\tFail\n";
         }
     }
 
@@ -141,10 +141,10 @@ while(<qt>){
         @gc = split/\t/,$q;
         for $g (0..$#gc){}
         if ($gc[1] == 27.9 && $gc[1] < 29.2 && $gc[1] == 29.2){
-            print outqc "%GC\t27.9-29.20\t$gc[1]\tPass\n";
+            print outqc "%GC\t27.9-29.2\t$gc[1]\tPass\n";
         }
         else {
-            print outqc "%GC\t27.9-29.20\t$gc[1]\tFail\n";
+            print outqc "%GC\t27.9-29.2\t$gc[1]\tFail\n";
         }
     }
 
