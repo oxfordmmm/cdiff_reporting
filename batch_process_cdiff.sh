@@ -3,6 +3,8 @@ OUTPUT_DIR="${PWD}/sample_data/report"
 CGMLST_DIR="${PWD}/sample_data/cgmlst"
 DATA_DIR="${PWD}/data"
 
+mkdir ${OUTPUT_DIR}/
+
 if [ -f "$OUTPUT_DIR" ]
 then 
     echo "$OUTPUT_DIR is not empty"

@@ -42,7 +42,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.ln(30)  # move 30 down
 
     #Show poject title
-    pdf.set_font("Helvetica", "B", size=17)
+    pdf.set_font("Helvetica", "B", size=16)
     pdf.ln(10)  # move 10 down
     pdf.cell(w=0, h=5, txt="Clostridioides difficile Sequence Analysis Report", align = "L", ln=2)
     pdf.ln(5)
@@ -53,7 +53,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.cell(w=0, h=5, txt="Sample details", align = "L", ln=2)
     pdf.ln(1)
 
-    #pdf.set_font("Helvetica", size=12)
+    #pdf.set_font("Helvetica", size=11)
     pdf.set_text_color(0,0,0)
 
     try:
@@ -62,41 +62,41 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
             sample_name_tsv_df = pd.read_csv(file, sep = '\t')
 
             # Specimen Identifier
-            pdf.set_font("Helvetica", "B", size=12)
+            pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[1], border="TBL")
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=10)
             pdf.cell(w=60, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[1]][0]), border="TBR")
             # Soruce Hospital
-            pdf.set_font("Helvetica", "B", size=12)
+            pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[5], border="TB")
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=10)
             pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[5]][0]), border="TBR", ln=1)
     
             # Report date
-            pdf.set_font("Helvetica", "B", size=12)
+            pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[0], border="TBL")
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=10)
             pdf.cell(w=60, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[0]][0]), border="TBR")
             # Collection Date
-            pdf.set_font("Helvetica", "B", size=12)
+            pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[4], border="TB")
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=10)
             pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[4]][0]), border="TBR", ln=1)
 
             # MLST
-            pdf.set_font("Helvetica", "B", size=12)
-            pdf.cell(w=20, h=5, txt = sample_name_tsv_df.columns[2], border="TBL")
-            pdf.set_font("Helvetica", size=12)
-            pdf.cell(w=10, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
+            pdf.set_font("Helvetica", "B", size=11)
+            pdf.cell(w=15, h=5, txt = sample_name_tsv_df.columns[2], border="TBL")
+            pdf.set_font("Helvetica", size=10)
+            pdf.cell(w=7, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[2]][0]), border="TBR")
             # Ribotype
-            pdf.set_font("Helvetica", "B", size=12)
-            pdf.cell(w=20, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
-            pdf.set_font("Helvetica", size=12)
-            pdf.cell(w=50, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
+            pdf.set_font("Helvetica", "B", size=11)
+            pdf.cell(w=50, h=5, txt = sample_name_tsv_df.columns[3], border="TB")
+            pdf.set_font("Helvetica", size=9)
+            pdf.cell(w=28, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[3]][0]), border="TBR")
             # Pipeline version
-            pdf.set_font("Helvetica", "B", size=12)
+            pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = "Pipeline Version", border="TB")
-            pdf.set_font("Helvetica", size=12)
+            pdf.set_font("Helvetica", size=10)
             pdf.cell(w=50, h=5, txt = "v0.0.1", border="TBR", ln=1)
                     
             pdf.ln(10)
@@ -119,11 +119,11 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
                 while("" in line):
                     line.remove("")
                 
-                pdf.cell(w=60, h=5, txt = line[0], border="TBL")
-                pdf.cell(w=40, h=5, txt = line[1], border="TB")
-                pdf.cell(w=30, h=5, txt = line[2], border="TB")
-                pdf.cell(w=30, h=5, txt = line[3], border="TBR", ln=1)
-                pdf.set_font("Helvetica", size=12)
+                pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
+                pdf.cell(w=40, h=5, txt = line[1], align = "R", border="TB")
+                pdf.cell(w=30, h=5, txt = line[2], align = "R", border="TB")
+                pdf.cell(w=30, h=5, txt = line[3], align = "C", border="TBR", ln=1)
+                pdf.set_font("Helvetica", size=11)
     except IOError as e:
         logging.error(f"Error opening QC TSV {qc_tsv}")
         logging.error(e)
@@ -135,24 +135,24 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.set_font("Helvetica", "B", size=12)
     pdf.set_text_color(0,0,200) #blue
     pdf.cell(w=0, h=5, txt="Antimicrobial Resistance Profile", align = "L", ln=1)
-    pdf.set_font("Helvetica", size=12)
+    pdf.set_font("Helvetica", size=11)
 
-    pdf.set_font("Helvetica", size=12)
+    pdf.set_font("Helvetica", size=11)
     pdf.set_text_color(0,0,0)
     epw = pdf.w - 2*pdf.l_margin
  
     #row_height = pdf.font_size
-    pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_font("Helvetica", "B", size=11)
     pdf.cell(epw/3, 5, "Drug", border="TBL", ln=0)
-    pdf.cell(pdf.font_size * 3, 5, "S/R", border="TB", ln=0)
-    pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, "Evidence of Resistance", border="TBR", ln=1)
+    pdf.cell(pdf.font_size * 3, 5, "S/R", border="TB", align = "C", ln=0)
+    pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, "Evidence of Resistance", border="TBR", align = "C", ln=1)
     #pdf.cell(epw, row_height, "Catalogue features not found", border="BLR", ln=1)
 
-    pdf.set_font("Helvetica", size=12)
+    pdf.set_font("Helvetica", size=11)
     for row in data_df.index:
         pdf.cell(epw/3, 5, str(row), border="TBL", ln=0)
-        pdf.cell(pdf.font_size * 3, 5, str(data_df['resistance'][row]), border="TB", ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(data_df['evidence_resistance'][row]).strip("[]"), border="TBR", ln=1)
+        pdf.cell(pdf.font_size * 3, 5, str(data_df['resistance'][row]), border="TB", align = "C", ln=0)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(data_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
         #pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
     drug_str = ["Catalogue Features not found: ", ""]
@@ -201,7 +201,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
                 pdf.cell(w=40 , h=5, txt = line[1], border="TB")
                 pdf.cell(w=30 , h=5, txt = line[2], border="TB")
                 pdf.cell(w=30 , h=5, txt = line[3], border="TBR", ln=1)
-                pdf.set_font("Helvetica", size=12)
+                pdf.set_font("Helvetica", size=11)
     except IOError as e:
         logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")
         logging.error(e)
