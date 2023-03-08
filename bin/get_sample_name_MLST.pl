@@ -14,7 +14,7 @@ while(<in>){
     chomp;
     $f = $_;
     #print "$f\n";
-    $date = localtime->strftime('%d/%m/%Y'); 
+    $date = localtime->strftime('%d %B %Y'); 
     #print "$datetime\n";
     @fname = split/\s/,$f;
     for $n (0..$#fname){}
