@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title":"Cdiff toxin coding gene catalogue",
+    "description":"catalogue JSON for MMM Cdiff toxin coding genes analysis",
+    "type":"object",
+    "properties":{
+        "toxin_genes":{
+            "description":"list of genes needing to be reported",
+            "type":"array",
+            "items": {
+                "type": "string"
+            }
+        }
+    },
+    "required":[
+        "toxin_genes"
+    ]
+}
