@@ -7,30 +7,40 @@ import logging
 from pathlib import Path
 import csv
 
-def amr_report_args(parser):
+def generate_individual_report_args(parser):
     parser.add_argument('-s', '--sample_tsv', required=True,
                             help='Path to basic sample info TSV')
     parser.add_argument('-q', '--qc_tsv', required=True,
                             help='Path to QC summary TSV')
     parser.add_argument('-a', '--amr_json', required=True,
                             help='Path to AMR JSON')
+    parser.add_argument('-t', '--toxin_json', required=True,
+                            help='Path to toxin gene presence JSON')
     parser.add_argument('-r', '--relatedness_tsv', required=True,
                             help='Path to relatedness TSV')
     parser.add_argument('-o', '--output_pdf', required=False, default="sample_report.pdf",
                             help='Path to output PDF')
     return parser
 
-def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, output_pdf:str):
-    #Read in AMR data in JSON
+def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin_json:str, relatedness_tsv:str, output_pdf:str):
+    # Read in AMR data in JSON
     try:
         pd.set_option('display.max_colwidth', None)
-        data_df = pd.read_json(amr_json).transpose()
-        data_df.index.names = ['Drug']
+        amr_df = pd.read_json(amr_json).transpose()
+        amr_df.index.names = ['Drug']
     except IOError as e:
         logging.error(f"Error opening AMR JSON {amr_json}")
         logging.error(e)
         exit(1)
-    #print(data_df)
+    #print(amr_df)
+
+    # Read in toxin coding genes in JSON
+    try:
+        toxin_df = pd.read_json(toxin_json, typ="series")
+    except IOError as e:
+        logging.error(f"Error opening AMR JSON {toxin_json}")
+        logging.error(e)
+        exit(1)
 
     #Append logos
     WIDTH = 210
@@ -98,12 +108,11 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
             pdf.cell(w=40, h=5, txt = "Pipeline Version", border="TB")
             pdf.set_font("Helvetica", size=10)
             pdf.cell(w=50, h=5, txt = "v0.0.1", border="TBR", ln=1)
-                    
-            pdf.ln(10)
     except Exception as e:
         logging.error(f"Error opening sample TSV {sample_tsv}")
         logging.error(e)
         exit(1)
+    pdf.ln(5)
 
     #Append QC stats
     pdf.set_font("Helvetica", "B", size=12)
@@ -129,7 +138,45 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         logging.error(e)
         exit(1)
 
-    pdf.ln(10)
+    pdf.ln(5)
+
+    # Toxin coding genes P/A
+    pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_text_color(0,0,200) #blue
+    pdf.cell(w=0, h=5, txt="Toxin Coding Genes", align = "L", ln=1)
+    pdf.set_font("Helvetica", size=11)
+
+    pdf.set_font("Helvetica", size=11)
+    pdf.set_text_color(0,0,0)
+    epw = pdf.w - 2*pdf.l_margin
+
+    #row_height = pdf.font_size
+    pdf.set_font("Helvetica", "B", size=11)
+    for index, row in enumerate(toxin_df.index):
+        if index < len(toxin_df.index) - 1:
+            pdf.cell(epw/len(toxin_df.index), 5, row, border="TBL", ln=0)
+        else:
+            pdf.cell(epw/len(toxin_df.index), 5, row, border="TBLR", ln=1)
+
+    pdf.set_font("Helvetica", size=11)
+    for index, row in enumerate(toxin_df):
+        present = "A"
+        if row:
+            present = "P"
+
+        if index < len(toxin_df) - 1:
+            pdf.cell(epw/len(toxin_df.index), 5, present, border="TBL", ln=0)
+        else:
+            pdf.cell(epw/len(toxin_df.index), 5, present, border="TBLR", ln=1)
+
+    drug_str = ["Catalogue Features not found: ", ""]
+    for row in amr_df.index:
+        if len(amr_df['evidence_sensitive'][row]) > 0:
+            drug_str[1] += f"{row} = {amr_df['evidence_sensitive'][row]}; ".translate( {ord(i): None for i in "[]"} )
+        else:
+            drug_str[1] += f"{row} = None; "
+
+    pdf.ln(5)
 
     #Append AMR Profile
     pdf.set_font("Helvetica", "B", size=12)
@@ -139,8 +186,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
 
     pdf.set_font("Helvetica", size=11)
     pdf.set_text_color(0,0,0)
-    epw = pdf.w - 2*pdf.l_margin
- 
+
     #row_height = pdf.font_size
     pdf.set_font("Helvetica", "B", size=11)
     pdf.cell(epw/3, 5, "Drug", border="TBL", ln=0)
@@ -149,19 +195,20 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     #pdf.cell(epw, row_height, "Catalogue features not found", border="BLR", ln=1)
 
     pdf.set_font("Helvetica", size=11)
-    for row in data_df.index:
+    for row in amr_df.index:
         pdf.cell(epw/3, 5, str(row), border="TBL", ln=0)
-        pdf.cell(pdf.font_size * 3, 5, str(data_df['resistance'][row]), border="TB", align = "C", ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(data_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
-        #pdf.cell(epw, row_height, str(data_df['evidence_sensitive'][row]), border="BLR", ln=1)
+        pdf.cell(pdf.font_size * 3, 5, str(amr_df['resistance'][row]), border="TB", align = "C", ln=0)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
+        #pdf.cell(epw, row_height, str(amr_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
     drug_str = ["Catalogue Features not found: ", ""]
-    for row in data_df.index:
-        if len(data_df['evidence_sensitive'][row]) > 0:
-            drug_str[1] += f"{row} = {data_df['evidence_sensitive'][row]}; ".translate( {ord(i): None for i in "[]"} )
+    for row in amr_df.index:
+        if len(amr_df['evidence_sensitive'][row]) > 0:
+            drug_str[1] += f"{row} = {amr_df['evidence_sensitive'][row]}; ".translate( {ord(i): None for i in "[]"} )
         else:
             drug_str[1] += f"{row} = None; "
-        
+    
+    # Footnote features not found for sensitivity recording
     first_line = 1
     line_width = 140
     while len(drug_str[-1]) > line_width - (first_line * len(drug_str[0])):
@@ -178,9 +225,9 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
     pdf.set_font("Helvetica", size=8)
     while len(drug_str) > 0:
         pdf.cell(WIDTH, 5, drug_str.pop(0), ln=1)
+    pdf.ln(5)
 
     #Append Related samples section
-    pdf.ln(10)
     pdf.set_font("Helvetica", "B", size=12)
     pdf.set_text_color(0,0,200) #blue
     pdf.cell(w=0, h=5, txt="Related samples", align = "L", ln=2)
@@ -206,6 +253,12 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
         logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")
         logging.error(e)
         exit(1)
+    pdf.ln(5)
+
+    #Append Related samples section
+    pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_text_color(0,0,200) #blue
+    pdf.cell(w=0, h=5, txt="Cluster Report", align = "L", ln=1)
 
     #Save to PDF
     try:
@@ -217,7 +270,7 @@ def amr_report(sample_tsv: str, qc_tsv: str, amr_json:str, relatedness_tsv:str, 
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Produce a PDF showing basic, QC, AMR and relatedness info for Cdiff samples.')
-    parser = amr_report_args(parser)
+    parser = generate_individual_report_args(parser)
     args = parser.parse_args()
 
     logging.basicConfig(handlers=[
@@ -225,5 +278,5 @@ if __name__ == '__main__':
         format='%(asctime)s - %(levelname)s - %(message)s', 
         level=logging.INFO)
 
-    amr_report(args.sample_tsv, args.qc_tsv, args.amr_json, args.relatedness_tsv, args.output_pdf)
+    generate_individual_report(args.sample_tsv, args.qc_tsv, args.amr_json, args.toxin_json, args.relatedness_tsv, args.output_pdf)
 

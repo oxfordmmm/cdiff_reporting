@@ -16,7 +16,7 @@ def process_toxin_coding_genes_args(parser):
                             help='Path to resistance catalogue')
     parser.add_argument('-b', '--blast_output_tsv', required=True,
                             help='Path to blast output tsv of gene information')
-    parser.add_argument('-o', '--output_json', required=False, default="toxin_coding_gene_report.json",
+    parser.add_argument('-o', '--output_json', required=False, default="toxin_coding_genes_report.json",
                             help='Path to output json')
     return parser
 
