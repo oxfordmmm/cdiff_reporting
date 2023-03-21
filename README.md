@@ -1,5 +1,5 @@
 # Clostridioides difficile Sequence Analysis Report Generator
-A set of python, perl and bash scripts for generating sequence analysis report (of C. difficile samples) produced from the outputs of Bugflow DSL2 pipeline
+A set of python, perl and bash scripts for generating PDF reports (of C. difficile samples) produced from the outputs of Bugflow DSL2 pipeline
 
 ## Requirements
 * Python >= 3.8
