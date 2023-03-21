@@ -143,7 +143,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     # Toxin coding genes P/A
     pdf.set_font("Helvetica", "B", size=12)
     pdf.set_text_color(0,0,200) #blue
-    pdf.cell(w=0, h=5, txt="Toxin Coding Genes", align = "L", ln=1)
+    pdf.cell(w=0, h=5, txt="Toxin-coding Genes", align = "L", ln=1)
     pdf.set_font("Helvetica", size=11)
 
     pdf.set_font("Helvetica", size=11)
@@ -160,9 +160,9 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
 
     pdf.set_font("Helvetica", size=11)
     for index, row in enumerate(toxin_df):
-        present = "A"
+        present = "Not found"
         if row:
-            present = "P"
+            present = "Present"
 
         if index < len(toxin_df) - 1:
             pdf.cell(epw/len(toxin_df.index), 5, present, border="TBL", ln=0)
@@ -258,7 +258,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     #Append Related samples section
     pdf.set_font("Helvetica", "B", size=12)
     pdf.set_text_color(0,0,200) #blue
-    pdf.cell(w=0, h=5, txt="Cluster Report", align = "L", ln=1)
+    #pdf.cell(w=0, h=5, txt="Cluster Report", align = "L", ln=1)
 
     #Save to PDF
     try:
