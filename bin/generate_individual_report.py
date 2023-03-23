@@ -36,7 +36,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
 
     # Read in toxin coding genes in JSON
     try:
-        toxin_df = pd.read_json(toxin_json, typ="series")
+        toxin_df = pd.read_json(toxin_json, typ="series").transpose()
     except IOError as e:
         logging.error(f"Error opening AMR JSON {toxin_json}")
         logging.error(e)
@@ -76,7 +76,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[1], border="TBL")
             pdf.set_font("Helvetica", size=10)
             pdf.cell(w=60, h=5, txt = str(sample_name_tsv_df[sample_name_tsv_df.columns[1]][0]), border="TBR")
-            # Soruce Hospital
+            # Source Hospital
             pdf.set_font("Helvetica", "B", size=11)
             pdf.cell(w=40, h=5, txt = sample_name_tsv_df.columns[5], border="TB")
             pdf.set_font("Helvetica", size=10)
@@ -129,8 +129,8 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
                     line.remove("")
                 
                 pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
-                pdf.cell(w=40, h=5, txt = line[1], align = "R", border="TB")
-                pdf.cell(w=30, h=5, txt = line[2], align = "R", border="TB")
+                pdf.cell(w=40, h=5, txt = line[1], align = "C", border="TB")
+                pdf.cell(w=30, h=5, txt = line[2], align = "C", border="TB")
                 pdf.cell(w=30, h=5, txt = line[3], align = "C", border="TBR", ln=1)
                 pdf.set_font("Helvetica", size=11)
     except IOError as e:
@@ -150,24 +150,23 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     pdf.set_text_color(0,0,0)
     epw = pdf.w - 2*pdf.l_margin
 
-    #row_height = pdf.font_size
     pdf.set_font("Helvetica", "B", size=11)
-    for index, row in enumerate(toxin_df.index):
-        if index < len(toxin_df.index) - 1:
-            pdf.cell(epw/len(toxin_df.index), 5, row, border="TBL", ln=0)
-        else:
-            pdf.cell(epw/len(toxin_df.index), 5, row, border="TBLR", ln=1)
-
+    pdf.cell(30, 5, "Toxin Gene", border="TBL", ln=0)
+    pdf.cell(20, 5, "Presence", border="TB", align = "C", ln=0)
+    pdf.cell(epw/6, 5, "Identity %", border="TB", align = "C", ln=0)
+    pdf.cell(epw/6, 5, "Length", border="TBR", align = "C", ln=1)
+    
     pdf.set_font("Helvetica", size=11)
-    for index, row in enumerate(toxin_df):
-        present = "Not found"
-        if row:
-            present = "Present"
-
-        if index < len(toxin_df) - 1:
-            pdf.cell(epw/len(toxin_df.index), 5, present, border="TBL", ln=0)
+    for row in toxin_df.index:
+        pdf.cell(30, 5, row, border="TBL", ln=0)
+        if toxin_df[row]["presence"]:
+            pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]), border="TBR", align = "C", ln=1)
         else:
-            pdf.cell(epw/len(toxin_df.index), 5, present, border="TBLR", ln=1)
+            pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, "N/A", border="TBR", align = "C", ln=1)
 
     drug_str = ["Catalogue Features not found: ", ""]
     for row in amr_df.index:
@@ -245,9 +244,9 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
                     print(f"sample {line[0]} outside cutoff")
                     continue
                 pdf.cell(w=90 , h=5, txt = line[0], border="TBL")
-                pdf.cell(w=40 , h=5, txt = line[1], border="TB")
-                pdf.cell(w=30 , h=5, txt = line[2], border="TB")
-                pdf.cell(w=30 , h=5, txt = line[3], border="TBR", ln=1)
+                pdf.cell(w=40 , h=5, txt = line[1], align="C", border="TB")
+                pdf.cell(w=30 , h=5, txt = line[2], align="C", border="TB")
+                pdf.cell(w=30 , h=5, txt = line[3], align="C", border="TBR", ln=1)
                 pdf.set_font("Helvetica", size=11)
     except IOError as e:
         logging.error(f"Error opening Relatedness TSV {relatedness_tsv}")

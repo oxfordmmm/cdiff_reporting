@@ -23,15 +23,24 @@ def process_toxin_coding_genes_args(parser):
 def initialise_toxin_dict(catalogue:dict):
     toxin_dict = dict()
     for gene in catalogue["toxin_genes"]:
-        toxin_dict[gene] = False
+        toxin_dict[gene] = {"presence": False, "percent_identity": -1, "length": -1}
     return toxin_dict
 
 def search_catalogue(catalogue:dict, feature_list:set, toxin_dict:dict):
     for gene in catalogue["toxin_genes"]:
         gene_regex = fr"{gene}"
-        for feature in feature_list:
-            if re.search(gene_regex, feature):
-                toxin_dict[gene] = True
+        for feature_entry in feature_list:
+            if re.search(gene_regex, feature_entry["sseqid"]):
+                if toxin_dict[gene]["presence"]:
+                    if int(feature_entry["length"]) < toxin_dict[gene]["length"]:
+                        pass
+                    elif int(feature_entry["length"]) == toxin_dict[gene]["length"]:
+                        if feature_entry["pident"] > toxin_dict[gene]["pident"]:
+                            toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"])}
+                    else:
+                        toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"])}
+                else:
+                    toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"])}
     return toxin_dict
 
 def process_toxin_coding_genes(blast_output_tsv: str, catalogue_file: str, schema_file:str, output_json:str):
@@ -52,17 +61,17 @@ def process_toxin_coding_genes(blast_output_tsv: str, catalogue_file: str, schem
 
     jsonschema.validate(instance=catalogue, schema=schema)
 
-    blast_list = set()
+    blast_list = []
     # load sample(s) TSVs
     if not Path(blast_output_tsv).is_file():
         logging.error("{} is not a file.".format(blast_output_tsv))
         raise FileNotFoundError
     else:
         with open(blast_output_tsv) as file:
-            reader = csv.reader(file, delimiter="\t")
+            reader = csv.DictReader(file, delimiter="\t")
             # build dict of genes/ alleles
             for line in reader:
-                blast_list.add(line[1])
+                blast_list.append(line)
     
     toxin_dict = initialise_toxin_dict(catalogue)
     toxin_dict = search_catalogue(catalogue, blast_list, toxin_dict)
