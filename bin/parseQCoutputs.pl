@@ -97,7 +97,7 @@ while(<qt>){
     if ($q =~ "Total length" && $q =~ "(>= 0 bp)"){
         @gnom = split/\t/,$q;
         for $m (0..$#gnom){}
-        if ($gnom[1] == 3900000 | $gnom[1] < 4500000 | $gnom[1] == 4500000){
+        if ($gnom[1] == 3900000 | $gnom[1] < 4500000 | $gnom[1] == 4600000){
             $gnom[1] = sprintf("%.1f", $gnom[1]/1000000); 
             print "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
             print outqc "Total assembly size (Mbp)\t3.9-4.5\t$gnom[1]\tPass\n";
