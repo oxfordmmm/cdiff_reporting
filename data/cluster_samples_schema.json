@@ -1,0 +1,31 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title":"Cdiff cluster samples",
+    "description":"JSON for input to MMM Cdiff cluster reporting",
+    "type":"object",
+    "properties":{
+        "samples": {
+            "description":"Samples for a summary report",
+            "type": "object",
+            "properties": {
+                "qc_file":{
+                    "description":"file with QC info for sample",
+                    "type":"string"
+                }
+            }
+        },
+        "cluster_file":{
+            "description":"file with cluster info for sample",
+            "type":"string"
+        },
+        "cluster_trees_dir":{
+            "description":"location of cluster tree images",
+            "type":"string"
+        }
+    },
+    "required":[
+        "samples",
+        "cluster_file",
+        "cluster_trees_dir"
+    ]
+}
