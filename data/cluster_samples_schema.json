@@ -17,10 +17,15 @@
         "cluster_file":{
             "description":"file with cluster info for sample",
             "type":"string"
+        },
+        "cluster_trees_dir":{
+            "description":"location of cluster tree images",
+            "type":"string"
         }
     },
     "required":[
         "samples",
-        "cluster_file"
+        "cluster_file",
+        "cluster_trees_dir"
     ]
 }
