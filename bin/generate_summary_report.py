@@ -34,6 +34,14 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
             else:
                 clusters[line["cluster_number"]] = [line["id"]]
 
+    filtered_clusters = {"No Cluster" : []}
+    for cluster_id, cluster in clusters.items():
+        if len(cluster) < 3:
+            filtered_clusters["No Cluster"].extend(cluster)
+        else:
+            filtered_clusters[cluster_id] = cluster
+    clusters = filtered_clusters
+
     #Append logos
     WIDTH = 210
     #HEIGHT = 297
@@ -121,14 +129,20 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
         else:
             pdf.cell(w=epw/6, h=5, txt = cluster_no, align = "C", border="TBL")
             pdf.cell(w=5*epw/6, h=5, txt = cluster_str[0], align = "L", border="TBR", ln=1)
+    pdf.ln(1)
+    pdf.set_font("Helvetica", "B", size=8)
+    pdf.cell(7, 5, "N.B.")
+    pdf.set_font("Helvetica", size=8)
+    pdf.cell(WIDTH, 5, "Only clusters of 3 or more samples are considered. Clusters of 1 or 2 samples are listed under \"No Cluster\".")
     pdf.ln(5)
 
     pdf.set_font("Helvetica", "B", size=12)
     for cluster_no, samples in clusters.items():
-        pdf.add_page()
-        pdf.cell(w=0, h=5, txt=f"Cluster {cluster_no}", align = "L", ln=2)
-        pdf.image(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf.labelled_tree.png", w=3*WIDTH/4)
-        pdf.ln(5)
+        if cluster_no != "No Cluster":
+            pdf.add_page()
+            pdf.cell(w=0, h=5, txt=f"Cluster {cluster_no}", align = "L", ln=2)
+            pdf.image(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf.labelled_tree.png", w=3*WIDTH/4)
+            pdf.ln(5)
 
     #Save to PDF
     try:
