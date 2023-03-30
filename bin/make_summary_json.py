@@ -18,18 +18,14 @@ def make_summary_json_args(parser):
     return parser
 
 def make_summary_json(sample_list: str, dirs:list[str], cluster_dir:str, output_json:str):
-    samples_json = {}
+    cluster_path = Path(cluster_dir)
+    samples_json = {"samples": {}, "cluster_file": str(cluster_path / "clusters.txt"), "cluster_trees_dir": str(cluster_path / "cluster_ml")}
     with open(sample_list) as file:
         for line in csv.reader(file, delimiter="\t"):
-            samples_json[line[0]] = {"qc_file": ""}
             for dir in dirs:
                 for match in Path(dir).glob(f'{line[0]}*QC_summary_table.tsv'):
-                    samples_json[line[0]]["qc_file"] = match
+                    samples_json["samples"][line[0]] = {"qc_file": match}
                     break
-    
-    cluster_path = Path(cluster_dir)
-    samples_json["cluster_file"] = str(cluster_path / "clusters.txt")
-    samples_json["cluster_trees_dir"] = str(cluster_path / "cluster_ml")
     
     with open(output_json, "w") as output_file:
         json.dump(samples_json, output_file, indent=4, default=str)
