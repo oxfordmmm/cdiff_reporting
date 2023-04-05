@@ -7,7 +7,7 @@ import json
 import csv
 
 def make_summary_json_args(parser):
-    parser.add_argument('-i', '--sample_list', required=True,
+    parser.add_argument('-s', '--sample_list', required=True,
                             help='Path to sample list used for runlistcompare')
     parser.add_argument('-c', '--cluster_dir', required=True,
                             help='Path to directory for cluster.txt and trees dir')
