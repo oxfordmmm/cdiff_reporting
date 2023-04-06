@@ -20,7 +20,7 @@ python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-When cdiff_reporting repo is already installed:
+When the virtual environmet has been populated before:
 ```
 source  venv/bin/activate
 ```
