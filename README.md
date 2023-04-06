@@ -11,9 +11,17 @@ Clone the repository:
 git clone https://github.com/oxfordmmm/cdiff_reporting
 ```
 
-Required virtual environment:
+## Required virtual environment
+
+First-time users:
 ```
 cd cdiff_reporting/
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+When cdiff_reporting repo is already installed:
+```
 source  venv/bin/activate
 ```
 
