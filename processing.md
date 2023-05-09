@@ -30,8 +30,8 @@ Need to put results in general pool
 * Dealing with neg samples??
 
 ```
-ln -s /mnt/scratch_2/output/test_processing/230124_VL00165_23_AACHJT5M5/cgmlst/cgmlst/*.json cgmlst_profiles/
-ln -s /mnt/scratch_2/output/test_processing/230124_VL00165_23_AACHJT5M5/mapping/consensus_fa/*.fa.gz consensus_fa/
+ln -s /mnt/scratch_2/output/test_processing/230124_VL00165_23_AACHJT5M5/cgmlst/cgmlst/*.json /mnt/scratch_2/cdiff_pools_new/cgmlst_profiles/
+ln -s /mnt/scratch_2/output/test_processing/230124_VL00165_23_AACHJT5M5/mapping/consensus_fa/*.fa.gz /mnt/scratch_2/cdiff_pools_new/consensus_fa/
 ```
 
 ## Indivdual reports
