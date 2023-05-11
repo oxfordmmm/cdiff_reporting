@@ -31,7 +31,7 @@ do
             ;;
         o) 
             if ! [[ -d "$OPTARG" ]]; then
-                mkdir ${OPTARG}/
+                mkdir -p ${OPTARG}/
             fi
 
             if [[ "$(ls -A $OPTARG)" ]]; then

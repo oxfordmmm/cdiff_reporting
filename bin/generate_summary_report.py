@@ -85,7 +85,7 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
                             break
             info["qc_pass"] = qc_pass
         except Exception as e:
-            logging.error(f"Error opening qc_file {info['qc_file']}")
+            logging.error(f"Error opening qc_file '{info['qc_file']}' for sample {sample}")
             logging.error(e)
             exit(1)
         
@@ -141,7 +141,7 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
         if cluster_no != "No Cluster":
             pdf.add_page()
             pdf.cell(w=0, h=5, txt=f"Cluster {cluster_no}", align = "L", ln=2)
-            pdf.image(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf_scaled.png", w=3*WIDTH/4)
+            pdf.image(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_iqtree_scaled.png", w=3*WIDTH/4)
             pdf.ln(5)
 
     #Save to PDF
