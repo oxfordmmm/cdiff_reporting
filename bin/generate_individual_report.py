@@ -154,17 +154,20 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     pdf.cell(30, 5, "Toxin Gene", border="TBL", ln=0)
     pdf.cell(20, 5, "Presence", border="TB", align = "C", ln=0)
     pdf.cell(epw/6, 5, "Identity %", border="TB", align = "C", ln=0)
-    pdf.cell(epw/6, 5, "Length", border="TBR", align = "C", ln=1)
-    
+    pdf.cell(epw/6, 5, "Length", border="TB", align = "C", ln=0)
+    pdf.cell(epw/6, 5, "Gene Length", border="TBR", align = "C", ln=1)
+
     pdf.set_font("Helvetica", size=11)
     for row in toxin_df.index:
         pdf.cell(30, 5, row, border="TBL", ln=0)
         if toxin_df[row]["presence"]:
             pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]), border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]), border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["gene_length"]), border="TBR", align = "C", ln=1)
         else:
             pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, "N/A", border="TBR", align = "C", ln=1)
 
