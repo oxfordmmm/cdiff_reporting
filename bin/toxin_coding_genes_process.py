@@ -23,24 +23,27 @@ def process_toxin_coding_genes_args(parser):
 def initialise_toxin_dict(catalogue:dict):
     toxin_dict = dict()
     for gene in catalogue["toxin_genes"]:
-        toxin_dict[gene] = {"presence": False, "percent_identity": -1, "length": -1, "gene_length": -1}
+        gene_length = catalogue["toxin_gene_lengths"][gene]
+        toxin_dict[gene] = {"presence": False, "percent_identity": -1,
+                            "length": -1, "gene_length": gene_length}
     return toxin_dict
 
 def search_catalogue(catalogue:dict, feature_list:set, toxin_dict:dict):
     for gene in catalogue["toxin_genes"]:
         gene_regex = fr"{gene}"
         for feature_entry in feature_list:
-            if re.search(gene_regex, feature_entry["sseqid"]):
+            if gene_regex == feature_entry["sseqid"]:
+                gene_length = catalogue["toxin_gene_lengths"][gene]
                 if toxin_dict[gene]["presence"]:
                     if int(feature_entry["length"]) < toxin_dict[gene]["length"]:
                         pass
                     elif int(feature_entry["length"]) == toxin_dict[gene]["length"]:
                         if feature_entry["pident"] > toxin_dict[gene]["pident"]:
-                            toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": int(feature_entry["slen"])}
+                            toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
                     else:
-                        toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": int(feature_entry["slen"])}
+                        toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
                 else:
-                    toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": int(feature_entry["slen"])}
+                    toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
     return toxin_dict
 
 def process_toxin_coding_genes(blast_output_tsv: str, catalogue_file: str, schema_file:str, output_json:str):
