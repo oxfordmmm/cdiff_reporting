@@ -165,7 +165,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
             pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, str(toxin_df[row]["length"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["length"] / toxin_df[row]["gene_length"]), border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, "%.2f"%(100 * toxin_df[row]["length"] / toxin_df[row]["gene_length"]), border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, str(toxin_df[row]["gene_length"]), border="TBR", align = "C", ln=1)
         else:
             pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
