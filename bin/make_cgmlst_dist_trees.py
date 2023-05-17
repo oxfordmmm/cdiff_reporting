@@ -131,7 +131,7 @@ if __name__ == '__main__':
     parser.add_argument('-o', '--output_dir', required=True,
                         help='Ouput directory')
     parser.add_argument('-c', '--cutoff', required=False,
-                        default=5,
+                        default=20,
                         help='cgmlst distance to use as cutoff for clusters')
     args = parser.parse_args()
     samples_dir = args.samples_json_dir
