@@ -34,16 +34,22 @@ def search_catalogue(catalogue:dict, feature_list:set, toxin_dict:dict):
         for feature_entry in feature_list:
             if gene_regex == feature_entry["sseqid"]:
                 gene_length = catalogue["toxin_gene_lengths"][gene]
+                match_pc = 100 * int(feature_entry["length"]) / gene_length
+                pident = float(feature_entry["pident"])
+                if pident < 90:
+                    continue
+                if pident < 97 and match_pc < 90:
+                    continue
                 if toxin_dict[gene]["presence"]:
                     if int(feature_entry["length"]) < toxin_dict[gene]["length"]:
                         pass
                     elif int(feature_entry["length"]) == toxin_dict[gene]["length"]:
-                        if feature_entry["pident"] > toxin_dict[gene]["pident"]:
-                            toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
+                        if pident > toxin_dict[gene]["pident"]:
+                            toxin_dict[gene] = {"presence": True, "percent_identity": pident, "length": int(feature_entry["length"]), "gene_length": gene_length}
                     else:
-                        toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
+                        toxin_dict[gene] = {"presence": True, "percent_identity": pident, "length": int(feature_entry["length"]), "gene_length": gene_length}
                 else:
-                    toxin_dict[gene] = {"presence": True, "percent_identity": float(feature_entry["pident"]), "length": int(feature_entry["length"]), "gene_length": gene_length}
+                    toxin_dict[gene] = {"presence": True, "percent_identity": pident, "length": int(feature_entry["length"]), "gene_length": gene_length}
     return toxin_dict
 
 def process_toxin_coding_genes(blast_output_tsv: str, catalogue_file: str, schema_file:str, output_json:str):

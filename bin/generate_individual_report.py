@@ -152,27 +152,31 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
 
     pdf.set_font("Helvetica", "B", size=11)
     pdf.cell(30, 5, "Toxin Gene", border="TBL", ln=0)
+    pdf.cell(25, 5, "Gene Length", border="TB", align = "C", ln=0)
     pdf.cell(20, 5, "Presence", border="TB", align = "C", ln=0)
     pdf.cell(epw/6, 5, "Identity %", border="TB", align = "C", ln=0)
-    pdf.cell(epw/6, 5, "Match Length", border="TB", align = "C", ln=0)
-    pdf.cell(epw/6, 5, "Match %", border="TB", align = "C", ln=0)
-    pdf.cell(epw/6, 5, "Gene Length", border="TBR", align = "C", ln=1)
+    pdf.cell(epw/6, 5, "Match Length (%)", border="TBR", align = "C", ln=1)
 
     pdf.set_font("Helvetica", size=11)
     for row in toxin_df.index:
         pdf.cell(30, 5, row, border="TBL", ln=0)
+        pdf.cell(25, 5, str(toxin_df[row]["gene_length"]), border="TB", align = "C", ln=0)
         if toxin_df[row]["presence"]:
-            pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
+            match_pc = 100 * toxin_df[row]["length"] / toxin_df[row]["gene_length"]
+            if match_pc > 80:
+                pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
+            else:
+                pdf.cell(20, 5, "Truncated", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, "%.2f"%(100 * toxin_df[row]["length"] / toxin_df[row]["gene_length"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["gene_length"]), border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]) + " (%.2f)"%match_pc, border="TBR", align = "C", ln=1)
         else:
             pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["gene_length"]), border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, "N/A", border="TBR", align = "C", ln=1)
+    
+    pdf.set_font("Helvetica", "B", size=8)
+    pdf.cell(45, 5, "Genes labelled as present if found with high identity (>97%) or high coverage (>80%)", ln=1)
+    pdf.cell(45, 5, "Truncatated tcdA (<80%) may be linked to deletion", ln=1)
 
     drug_str = ["Catalogue Features not found: ", ""]
     for row in amr_df.index:
