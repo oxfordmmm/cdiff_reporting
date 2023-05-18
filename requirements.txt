@@ -7,3 +7,7 @@ pyrsistent
 python-dateutil
 pytz
 six
+scipy
+networkx
+matplotlib
+biopython
