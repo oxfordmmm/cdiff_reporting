@@ -1,0 +1,24 @@
+name: cdiff_reporting
+channels:
+    - conda-forge
+    - bioconda
+    - r
+    - defaults
+dependencies:
+    - attrs
+    - fpdf
+    - numpy
+    - pandas
+    - pyrsistent
+    - python-dateutil
+    - pytz
+    - six
+    - scipy
+    - networkx
+    - matplotlib
+    - biopython
+    - r
+    - r-tidyverse
+    - bioconductor-treeio
+    - bioconductor-ggtree=3.6
+    - r-patchwork

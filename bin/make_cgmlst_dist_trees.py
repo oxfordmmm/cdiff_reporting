@@ -152,16 +152,3 @@ if __name__ == '__main__':
         f = open(f"{output_dir}/cluster_{cluster+1}.newick", 'w')
         f.write(newick)
         f.close()
-
-        tree = Phylo.read(f"{output_dir}/cluster_{cluster+1}.newick", "newick")
-
-        # Draw the tree using Phylo module
-        tree.rooted = False
-        Phylo.draw(tree)
-        #Phylo.draw(tree, branch_labels=lambda c: c.branch_length)
-
-        # Save the tree as a PNG file
-        plt.savefig(f"{output_dir}/cluster_{cluster+1}.png")
-
-        # Clear the plot to prepare for the next tree
-        plt.clf()

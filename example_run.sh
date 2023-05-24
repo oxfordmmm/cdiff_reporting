@@ -1,3 +1,5 @@
+source /mnt/scratch/miniconda3/etc/profile.d/conda.sh
+
 batch="test_batch"
 
 input='/mnt/arun_in_bucket/UKHSA_runs/230125_VL00165_24_AACHJTHM5/*{1,2}_001.fastq.gz'
@@ -15,7 +17,7 @@ cd $run_dir/mapping
 nextflow run /mnt/scratch/colpus/Bugflow_DSL2 -entry cdiff_mapping_snpCalling_DE --reads $input --refFasta $ref --outdir $output_dir/mapping -profile docker,oci
 
 ### Individual reports
-source /mnt/scratch/colpus/cdiff_reporting/venv/bin/activate
+conda activate /mnt/scratch/colpus/cdiff_reporting/conda_env
 cd /mnt/scratch/colpus/cdiff_reporting
 bash batch_process_cdiff.sh -s $output_dir/cgmlst/ -d /mnt/scratch/colpus/cdiff_reporting/data/ -c $output_dir/cgmlst/cgmlst -o $output_dir/new_reports
 
@@ -34,13 +36,14 @@ do
 done
 
 
-# Make cgmlst clusters
+Make cgmlst clusters
 mkdir $output_dir/cgmlst_clusters 
-source /mnt/scratch/colpus/cdiff_reporting/venv/bin/activate
 python3 /mnt/scratch/colpus/cdiff_reporting/bin/make_cgmlst_dist_trees.py \
     -s $output_dir/cgmlst/cgmlst \
     -o $output_dir/cgmlst_clusters \
     -c 20
+
+Rscript /mnt/scratch/colpus/cdiff_reporting/bin/draw_trees.R $output_dir/cgmlst_clusters
 
 # Make summary pdf
 cd $run_dir
