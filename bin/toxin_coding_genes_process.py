@@ -44,7 +44,7 @@ def search_catalogue(catalogue:dict, feature_list:set, toxin_dict:dict):
                     if int(feature_entry["length"]) < toxin_dict[gene]["length"]:
                         pass
                     elif int(feature_entry["length"]) == toxin_dict[gene]["length"]:
-                        if pident > toxin_dict[gene]["pident"]:
+                        if pident > toxin_dict[gene]["percent_identity"]:
                             toxin_dict[gene] = {"presence": True, "percent_identity": pident, "length": int(feature_entry["length"]), "gene_length": gene_length}
                     else:
                         toxin_dict[gene] = {"presence": True, "percent_identity": pident, "length": int(feature_entry["length"]), "gene_length": gene_length}

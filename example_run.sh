@@ -21,6 +21,7 @@ conda activate /mnt/scratch/colpus/cdiff_reporting/conda_env
 cd /mnt/scratch/colpus/cdiff_reporting
 bash batch_process_cdiff.sh -s $output_dir/cgmlst/ -d /mnt/scratch/colpus/cdiff_reporting/data/ -c $output_dir/cgmlst/cgmlst -o $output_dir/new_reports
 
+python3 /mnt/scratch/colpus/cdiff_reporting/bin/toxin_jsons_to_csv.py -d $output_dir/new_reports -o $output_dir/toxin_summary.csv
 ### For group reports
 
 # Make consensus fasta list
