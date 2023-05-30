@@ -10,7 +10,7 @@ def make_summary_json_args(parser):
     parser.add_argument('-s', '--sample_list', required=True,
                             help='Path to sample list used for runlistcompare')
     parser.add_argument('-c', '--cluster_dir', required=True,
-                            help='Path to directory for cluster.txt and trees dir')
+                            help='Path to directory for clusters.csv and trees')
     parser.add_argument('-d', '--dirs',  nargs="*", required=True,
                             help='Path to directories that will be searched for QC files')
     parser.add_argument('-o', '--output_json', required=False, default="summary_data.json",
@@ -19,7 +19,8 @@ def make_summary_json_args(parser):
 
 def make_summary_json(sample_list: str, dirs:list[str], cluster_dir:str, output_json:str):
     cluster_path = Path(cluster_dir)
-    samples_json = {"samples": {}, "cluster_file": str(cluster_path / "clusters.txt"), "cluster_trees_dir": str(cluster_path / "cluster_ml")}
+    samples_json = {"samples": {}, "cluster_file": str(cluster_path / "clusters.tsv"), "cluster_trees_dir": str(cluster_path)}
+
     with open(sample_list) as file:
         for line in csv.reader(file, delimiter="\t"):
             samples_json["samples"][line[0]] = {"qc_file": ""}

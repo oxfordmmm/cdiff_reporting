@@ -1,9 +1,14 @@
 {
     "toxin_genes": [
-        "cdtAB",
         "tcdA",
         "tcdB",
         "cdtA",
         "cdtB"
-    ]
+    ],
+    "toxin_gene_lengths" : {
+        "tcdA" : 8133,
+        "tcdB" : 7101,
+        "cdtA" : 1392,
+        "cdtB" : 2631
+    }
 }

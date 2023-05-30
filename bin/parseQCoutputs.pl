@@ -70,19 +70,26 @@ while(<qc>){
 
     if ($f =~ /Sequence length/){
         @len = split/\t/,$f;
-        for $s (0..$#len){}
+        # for $s (0..$#len){}
         #print "$len[1]*\n";
-        @seqlen = split/-/,$len[1];
-        for $s (0..$#seqlen){}
-        $mean = ($seqlen[0] + $seqlen[1])/2;
+        # @seqlen = split/-/,$len[1];
+        # for $s (0..$#seqlen){}
+        # $mean = ($seqlen[0] + $seqlen[1])/2;
         #print "$mean**\n";
-        if ($mean > 50 | $len[1] > 150){
-            print "Sequence length (bp)\t50-150\t$mean\tPass\n";
-            print outqc "Sequence length (bp)\t50-150\t$mean\tPass\n";
+        $length = $len[1];
+        if ($len[1] =~ /-/){
+            @seqlen = split/-/,$len[1];
+            $mean = ($seqlen[0] + $seqlen[1])/2;
+            $length = $mean;
         }
-        else {
-            print "Sequence length (bp)\t50-150\t$len[1]\tFail\n";
-            print outqc "Sequence length (bp)\t50-150\t$len[1]\tFail\n";
+
+        if ($length > 50 & $length < 150){
+            print "Sequence length (bp)\t50-150\t$length\tPass\n";
+            print outqc "Sequence length (bp)\t50-150\t$length\tPass\n";
+        }
+        else{
+            print "Sequence length (bp)\t50-150\t$length\tFail\n";
+            print outqc "Sequence length (bp)\t50-150\t$length\tFail\n";
         }
     }
 

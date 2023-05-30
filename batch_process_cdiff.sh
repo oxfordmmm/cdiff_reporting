@@ -67,7 +67,7 @@ fi
 
 #mkdir ${OUTPUT_DIR}/
 
-for path in $(ls ${SOURCE_DIR}/assemblies/*_R_contigs.fa) 
+for path in $(ls ${SOURCE_DIR}/assemblies/*_contigs.fa) 
 do 
     basename $path | perl -p -e 's/\_contigs\.fa//g' >> "${OUTPUT_DIR}/processed_genomes.tsv"
 done

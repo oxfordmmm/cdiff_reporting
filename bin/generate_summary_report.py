@@ -6,6 +6,7 @@ import logging
 from pathlib import Path
 import csv
 import json
+from PIL import Image
 
 def generate_summary_report_args(parser):
     parser.add_argument('-s', '--samples_json', required=True,
@@ -36,7 +37,7 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
 
     filtered_clusters = {"No Cluster" : []}
     for cluster_id, cluster in clusters.items():
-        if len(cluster) < 3:
+        if len(cluster) < 2 or cluster_id == '0':
             filtered_clusters["No Cluster"].extend(cluster)
         else:
             filtered_clusters[cluster_id] = cluster
@@ -133,15 +134,34 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
     pdf.set_font("Helvetica", "B", size=8)
     pdf.cell(7, 5, "N.B.")
     pdf.set_font("Helvetica", size=8)
-    pdf.cell(WIDTH, 5, "Only clusters of 3 or more samples are considered. Clusters of 1 or 2 samples are listed under \"No Cluster\".")
+    # pdf.cell(WIDTH, 5, "Only clusters of 3 or more samples are considered. Clusters of 1 or 2 samples are listed under \"No Cluster\".")
     pdf.ln(5)
 
     pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_auto_page_break(auto=True, margin=15)
+    pdf.add_page()
     for cluster_no, samples in clusters.items():
         if cluster_no != "No Cluster":
-            pdf.add_page()
+            image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}.png"
+            remaining_space = pdf.h - pdf.get_y()
+
+            # Get the height of the header
+            header_height = pdf.font_size + 6
+
+            # Open the image file
+            image = Image.open(image_path)
+
+            # Calculate the proportional image height based on the page width
+            image_width, image_height = image.size
+            max_image_width = 3*WIDTH/4
+            image_height = (image_height / image_width) * max_image_width
+
+            # Check if there is enough space for the header and image
+            if remaining_space < (header_height + image_height):
+                pdf.add_page()
+
             pdf.cell(w=0, h=5, txt=f"Cluster {cluster_no}", align = "L", ln=2)
-            pdf.image(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_iqtree_scaled.png", w=3*WIDTH/4)
+            pdf.image(image_path, w=3*WIDTH/4)
             pdf.ln(5)
 
     #Save to PDF
