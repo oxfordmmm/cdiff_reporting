@@ -9,6 +9,7 @@ dependencies:
     - fpdf
     - numpy
     - pandas
+    - jsonschema
     - pyrsistent
     - python-dateutil
     - pytz
