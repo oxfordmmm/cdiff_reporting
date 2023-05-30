@@ -56,6 +56,13 @@ def search_catalogue(catalogue:dict, feature_list:set, drug_resistances:dict):
     return drug_resistances
 
 def consolidate_sensitive_evidence(drug_resistances:dict, catalogue: dict):
+    # Remove duplicates from evidence lists
+    for drug in catalogue["drugs"]:
+        drug_resistances[drug]["evidence_resistance"] = list(set(
+            drug_resistances[drug]["evidence_resistance"]
+        ))
+
+
     for gene, gene_value in catalogue["genes"].items():
         if "alleles" in gene_value:
             for allele, allele_value in gene_value["alleles"].items():
