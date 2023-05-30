@@ -56,6 +56,13 @@ def search_catalogue(catalogue:dict, feature_list:set, drug_resistances:dict):
     return drug_resistances
 
 def consolidate_sensitive_evidence(drug_resistances:dict, catalogue: dict):
+    # Remove duplicates from evidence lists
+    for drug in catalogue["drugs"]:
+        drug_resistances[drug]["evidence_resistance"] = list(set(
+            drug_resistances[drug]["evidence_resistance"]
+        ))
+
+
     for gene, gene_value in catalogue["genes"].items():
         if "alleles" in gene_value:
             for allele, allele_value in gene_value["alleles"].items():
@@ -118,7 +125,12 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
             reader = csv.reader(file, delimiter="\t")
             # build dict of genes/ alleles
             for line in reader:
-                blast_list.add(line[1])
+                if line[0] == 'qseqid':
+                    continue
+                pident = float(line[2])
+                match_pc = 100 * int(line[3]) / int(line[12])
+                if pident > 97 or match_pc > 90:
+                    blast_list.add(line[1])
     
     if not Path(amr_finder_output_tsv).is_file():
         logging.error("{} is not a file.".format(amr_finder_output_tsv))
