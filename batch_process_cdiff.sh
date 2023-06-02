@@ -79,7 +79,7 @@ do
     perl bin/get_sample_name_MLST.pl "${SOURCE_DIR}/mlst/${genome}_ST.tsv" "${OUTPUT_DIR}/${genome}_name.tsv" "${DATA_DIR}/LookUpTable_ST_RT.tsv"
 
     #qc
-    perl bin/parseQCoutputs.pl "${SOURCE_DIR}/raw_fastqc_single/${genome}_raw_reads_fastqc/${genome}.txt" "${SOURCE_DIR}/quast/${genome}_Quastreport.tsv" "${OUTPUT_DIR}/${genome}_QC_summary_table.tsv"
+    python3 bin/parseQCoutputs.py -f "${SOURCE_DIR}/raw_fastqc_single/${genome}_raw_reads_fastqc/${genome}.txt" -q "${SOURCE_DIR}/quast/${genome}_Quastreport.tsv" -o "${OUTPUT_DIR}/${genome}_QC_summary_table.tsv"
 
     #amr profile
     python3 bin/AMR_process.py -c data/AMR_catalogue.json \
