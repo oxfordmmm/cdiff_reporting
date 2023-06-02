@@ -63,7 +63,8 @@ draw_tree <- function(newick_file) {
   
   gg_tr <- ggtree(as.treedata(tree)) +
     geom_tiplab(size=text_size) +
-    theme_tree2() +
+    # theme_tree2() +
+    geom_treescale() +
     hexpand(.4, direction = 1) +
     xlab('cgmlst distance') +
     theme(axis.title.x = element_text(size=18))
