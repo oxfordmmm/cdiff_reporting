@@ -8,7 +8,7 @@ dir <- args[1]
 
 tree_files <- list.files(dir, pattern = "\\.newick$", full.names = T)
 
-get_depth <- function(tree, n) {
+get_node_depth <- function(tree, n) {
   to_search = c(n)
   depths = c(0)
   max_d = 0
@@ -39,17 +39,21 @@ get_depth <- function(tree, n) {
   return(max_d)
 }
 
-# Scales tree so that total depth is 1 (or target_length)
-normalise_tree <- function(tree_tb, target_length = 1) {
+get_depth <- function(tree_tb) {
   root <- tree_tb %>% 
     filter(parent == node) %>% 
     .$node
-  
-  depth <- get_depth(tree_tb, root)
+  depth <- get_node_depth(tree_tb, root)
+  return(depth)
+}
+
+# Scales tree so that total depth is 1 (or target_length)
+normalise_tree <- function(tree_tb, target_length = 1) {
+  depth <- get_depth(tree_tb)
   
   tree_tb %>% 
-    mutate(branch.length = branch.length * target_length / depth)
-  
+    mutate(branch.length = branch.length * target_length / depth) %>% 
+    return()
 }
 
 draw_tree <- function(newick_file) {
@@ -59,15 +63,22 @@ draw_tree <- function(newick_file) {
   text_size = if_else(n_leaves > 20, 3, 8)
   tree <- as_tibble(tree)
   
+  depth <- get_depth(tree)
   # tree <- normalise_tree(tree)
   
   gg_tr <- ggtree(as.treedata(tree)) +
     geom_tiplab(size=text_size) +
     # theme_tree2() +
     geom_treescale() +
-    hexpand(.4, direction = 1) +
     xlab('cgmlst distance') +
     theme(axis.title.x = element_text(size=18))
+
+  if(depth < 7) {
+    gg_tr <- gg_tr + scale_x_continuous(limits=c(NA, 10))
+  }
+  else{
+    gg_tr <- gg_tr + hexpand(.4, direction = 1)
+  }
   
   
   gg_tr
