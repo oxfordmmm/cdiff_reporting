@@ -1,6 +1,6 @@
 # LICENCE TERMS FOR ACCESS TO SOFTWARE AND DATABASE FOR ACADEMIC USE  
   
-These licence terms apply to all licences granted by THE CHANCELLOR, MASTERS AND SCHOLARS OF THE UNIVERSITY OF OXFORD whose administrative offices are at University Offices, Wellington Square, Oxford OX1 2JD, United Kingdom (the “University”) for use of or access to the BUGflow software (“the Software”) through this website https://github.com/davideyre/bug-flow (the”Website”).   
+These licence terms apply to all licences granted by THE CHANCELLOR, MASTERS AND SCHOLARS OF THE UNIVERSITY OF OXFORD whose administrative offices are at University Offices, Wellington Square, Oxford OX1 2JD, United Kingdom (the “University”) for use of or access to the cdiff_reporting software (“the Software”) through this website https://github.com/oxfordmmm/cdiff_reporting (the”Website”).   
   
 PLEASE READ THESE LICENCE TERMS CAREFULLY BEFORE USING THE SOFTWARE THROUGH THIS WEBSITE.  IF YOU DO NOT AGREE TO THESE LICENCE TERMS YOU SHOULD NOT USE THE SOFTWARE.  
   
