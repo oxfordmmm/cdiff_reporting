@@ -39,7 +39,7 @@ do
 done
 
 
-Make cgmlst clusters
+# Make cgmlst clusters
 mkdir $output_dir/cgmlst_clusters 
 python3 /mnt/scratch/colpus/cdiff_reporting/bin/make_cgmlst_dist_trees.py \
     -s $output_dir/cgmlst/cgmlst \
