@@ -50,6 +50,10 @@ get_depth <- function(tree_tb) {
 # Scales tree so that total depth is 1 (or target_length)
 normalise_tree <- function(tree_tb, target_length = 1) {
   depth <- get_depth(tree_tb)
+
+  if(depth==0) {
+    stop("Can't normalise when tree depth is 0")
+  }
   
   tree_tb %>% 
     mutate(branch.length = branch.length * target_length / depth) %>% 
@@ -57,6 +61,7 @@ normalise_tree <- function(tree_tb, target_length = 1) {
 }
 
 draw_tree <- function(newick_file) {
+  print(sprintf("drawing %s", newick_file))
   tree <- read.newick(newick_file)
   n_leaves <- Ntip(tree)
   height <- min(3 + n_leaves, 18)
@@ -64,12 +69,13 @@ draw_tree <- function(newick_file) {
   tree <- as_tibble(tree)
   
   depth <- get_depth(tree)
+  print(sprintf("depth %s", depth))
   # tree <- normalise_tree(tree)
   
   gg_tr <- ggtree(as.treedata(tree)) +
     geom_tiplab(size=text_size) +
     # theme_tree2() +
-    geom_treescale() +
+    geom_treescale(width = 1) +
     xlab('cgmlst distance') +
     theme(axis.title.x = element_text(size=18))
 
@@ -80,9 +86,7 @@ draw_tree <- function(newick_file) {
     gg_tr <- gg_tr + hexpand(.4, direction = 1)
   }
   
-  
-  gg_tr
-  ggsave(str_replace(newick_file, '.newick', '.png'), width=12, height=height, dpi=300)
+  ggsave(str_replace(newick_file, '.newick', '.png'), plot=gg_tr, width=12, height=height, dpi=300)
   return(gg_tr)
 }
 draw_tree <- Vectorize(draw_tree)
