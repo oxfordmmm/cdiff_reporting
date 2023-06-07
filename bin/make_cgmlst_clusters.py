@@ -9,7 +9,7 @@ from scipy.spatial.distance import squareform
 from Bio import Phylo
 import matplotlib.pyplot as plt
 
-def read_json(dir: str) -> dict:
+def read_json(dir: str, ids: list) -> dict:
     data = {}
 
     sys.stdout.write("Reading in JSON files\n")
@@ -17,7 +17,10 @@ def read_json(dir: str) -> dict:
     
     for filename in os.listdir(dir):
         if filename.endswith("cgmlst.json"):
-            filebase = filename.replace("_R_cgmlst.json", "")
+            filebase = filename.replace("_cgmlst.json", "")
+            if not filebase in ids:
+                continue
+
             filepath = os.path.join(dir, filename)
             with open(filepath, "r") as file:
                 try:
@@ -89,21 +92,23 @@ def create_clusters(samples, distances, cutoff: int):
     components = nx.connected_components(G)
     distances_df = pd.DataFrame(distances, columns=['sample_1', 'sample_2', 'compared', 'differences'])
 
+    clusters_dict = {}
     clusters = [] # will be list of (cluster, sample). 0 means no cluster
     cluster_i = 1
 
     # Now need to form 
     newicks = []
-    for cluster, component in enumerate(components):
+    for component in components:
+        component = list(component)
         if len(component) <= 1:
             for sample in component:
                 clusters.append([0, sample])
             continue
 
+        clusters_dict[cluster_i] = component
         for sample in component:
-                clusters.append([cluster_i, sample])
+            clusters.append([cluster_i, sample])
         cluster_i += 1
-        component = list(component)
         comp_df = distances_df.query('sample_1 in @component').query('sample_2 in @component')
         indexes = {sample:index for index,sample in enumerate(component)}
 
@@ -122,10 +127,12 @@ def create_clusters(samples, distances, cutoff: int):
         newick = to_newick(Z, component)
         newicks.append(newick)
     
-    return newicks, pd.DataFrame(clusters, columns=['cluster_number', 'id'])
+    return newicks, pd.DataFrame(clusters, columns=['cluster_number', 'id']), clusters_dict
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Produce cgmlst distance matrix and cluster trees.')
+    parser.add_argument('-f', '--fasta_list_tsv', required=True,
+                        help='tsv with overall consensus fasta list')
     parser.add_argument('-s', '--samples_json_dir', required=True,
                         help='Directory containing cgmlst json files')
     parser.add_argument('-o', '--output_dir', required=True,
@@ -134,13 +141,17 @@ if __name__ == '__main__':
                         default=20,
                         help='cgmlst distance to use as cutoff for clusters')
     args = parser.parse_args()
+    consensus_fastas =  pd.read_csv(args.fasta_list_tsv, sep='\t', names=['id', 'path'])
     samples_dir = args.samples_json_dir
     output_dir = args.output_dir
     cutoff = int(args.cutoff)
 
-    profiles = read_json(samples_dir)
+    consensus_ids = list(consensus_fastas['id'])
+    print("consensus_ids")
+    print(consensus_ids)
+    profiles = read_json(samples_dir, consensus_ids)
     distances = calculate_distances(profiles)
-    newicks, clusters = create_clusters(profiles.keys(), distances, cutoff)
+    newicks, clusters, clusters_dict = create_clusters(profiles.keys(), distances, cutoff)
 
     distances_df = pd.DataFrame(distances, columns=['sample_1', 'sample_2', 'compared', 'differences'])
     distances_df.to_csv(f"{output_dir}/distances.csv", index=False)
@@ -149,6 +160,10 @@ if __name__ == '__main__':
                                            sep='\t')
 
     for cluster, newick in enumerate(newicks):
-        f = open(f"{output_dir}/cluster_{cluster+1}.newick", 'w')
+        f = open(f"{output_dir}/cluster_{cluster+1}_cgmlst_scaled.newick", 'w')
         f.write(newick)
         f.close()
+    
+    for cluster, ids in clusters_dict.items():
+        consensus_fastas.query('id in @ids').to_csv(f"{output_dir}/cluster_{cluster}_consensus.tsv", sep='\t', header=False, index=False)
+
