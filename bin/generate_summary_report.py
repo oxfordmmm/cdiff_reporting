@@ -143,8 +143,8 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
     pdf.add_page()
     for cluster_no, samples in clusters.items():
         if cluster_no != "No Cluster":
-            if os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_iqtree_scaled.png"):
-                image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_iqtree_scaled.png"
+            if os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf_scaled.png"):
+                image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf_scaled.png"
             elif os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_phyml_scaled.png"):
                 image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_phyml_scaled.png"
             elif os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cgmlst_scaled.png"):
