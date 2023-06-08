@@ -58,6 +58,12 @@ def search_catalogue(catalogue:dict, feature_list:set, drug_resistances:dict):
 def consolidate_sensitive_evidence(drug_resistances:dict, catalogue: dict):
     # Remove duplicates from evidence lists
     for drug in catalogue["drugs"]:
+        if drug == 'Tetracycline':
+            # rename tet40 to tet(40)
+            drug_resistances[drug]["evidence_resistance"] = [
+                gene if gene != 'tet40' else 'tet(40)' for gene in drug_resistances[drug]["evidence_resistance"]
+            ]
+
         drug_resistances[drug]["evidence_resistance"] = list(set(
             drug_resistances[drug]["evidence_resistance"]
         ))
