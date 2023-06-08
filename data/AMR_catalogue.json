@@ -35,7 +35,7 @@
             "alleles": {
                 "gyrA": {
                     "mutations": {
-                        "T821": {
+                        "T82I": {
                             "drug": "Quinolone/Fluoroquinolone"
                         }
                     }
@@ -51,7 +51,7 @@
         },
         "rpo": {
             "alleles": {
-                "rpoC": {
+                "rpoB": {
                     "mutations": {
                         "V1143F": {
                             "drug": "Fidaxomicin"
@@ -64,7 +64,11 @@
                         },
                         "Q1074K": {
                             "drug": "Fidaxomicin"
-                        },
+                        }
+                    }
+                },
+                "rpoC": {
+                    "mutations": {
                         "D237Y": {
                             "drug": "Fidaxomicin"
                         }

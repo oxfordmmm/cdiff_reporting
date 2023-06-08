@@ -167,8 +167,8 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
                 pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
             else:
                 pdf.cell(20, 5, "Truncated", border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]) + " (%.2f)"%match_pc, border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, str(round(toxin_df[row]["percent_identity"], 1)), border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]) + " (%.0f)"%match_pc, border="TBR", align = "C", ln=1)
         else:
             pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
@@ -207,15 +207,21 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     for row in amr_df.index:
         pdf.cell(epw/3, 5, str(row), border="TBL", ln=0)
         pdf.cell(pdf.font_size * 3, 5, str(amr_df['resistance'][row]), border="TB", align = "C", ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]").replace('\'', ''), border="TBR", align = "C", ln=1)
         #pdf.cell(epw, row_height, str(amr_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
-    drug_str = ["Catalogue Features not found: ", ""]
-    for row in amr_df.index:
-        if len(amr_df['evidence_sensitive'][row]) > 0:
-            drug_str[1] += f"{row} = {amr_df['evidence_sensitive'][row]}; ".translate( {ord(i): None for i in "[]"} )
-        else:
-            drug_str[1] += f"{row} = None; "
+
+    amr_checks = {
+        "Metronidazole":["pCD-METRO"],
+        "Tetracycline":["tet"],
+        "Macrolide/Clindamycin":["ermB"],
+        "Aminoglycoside":["aphA", "AAC"],
+        "Quinolone/Fluoroquinolone":["gyrA-T82I", "gyrB-D426N"],
+        "Fidaxomicin":["rpoB-V1143F", "rpoB-V1143G", "rpoB-V1143L", "rpoB-Q1074K", "rpoC-D237Y"]
+    }
+    drug_str = ["Catalogue Features checked for: ", ""]
+    for drug, checks in amr_checks.items():
+        drug_str[1] += f"{drug} = {', '.join(checks)}; "
     
     # Footnote features not found for sensitivity recording
     first_line = 1
