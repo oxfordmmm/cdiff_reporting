@@ -24,6 +24,7 @@ bash batch_process_cdiff.sh -s $output_dir/cgmlst/ -d /mnt/scratch/colpus/cdiff_
 
 python3 /mnt/scratch/colpus/cdiff_reporting/bin/toxin_jsons_to_csv.py -d $output_dir/new_reports -o $output_dir/toxin_summary.csv
 python3 /mnt/scratch/colpus/cdiff_reporting/bin/summarise_qc.py -d $output_dir/new_reports -o $output_dir/qc_summary.csv
+python3 /mnt/scratch/colpus/cdiff_reporting/bin/summarise_mixed_sites.py -d $output_dir/mapping/mixed_sites -o $output_dir/mixed_sites
 ### For group reports
 
 # Make consensus fasta list
