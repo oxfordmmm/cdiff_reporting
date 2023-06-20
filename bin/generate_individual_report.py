@@ -210,7 +210,7 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
         pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]").replace('\'', ''), border="TBR", align = "C", ln=1)
         #pdf.cell(epw, row_height, str(amr_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
-
+    # Needs to be updated if catalogue changes. Allows for more compact description here though
     amr_checks = {
         "Metronidazole":["pCD-METRO"],
         "Tetracycline":["tet"],
