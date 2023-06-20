@@ -12,6 +12,8 @@ def generate_individual_report_args(parser):
                             help='Path to basic sample info TSV')
     parser.add_argument('-q', '--qc_tsv', required=True,
                             help='Path to QC summary TSV')
+    parser.add_argument('-b', '--bracken_tsv', required=True,
+                            help='Path to bracken summary TSV')
     parser.add_argument('-a', '--amr_json', required=True,
                             help='Path to AMR JSON')
     parser.add_argument('-t', '--toxin_json', required=True,
@@ -22,7 +24,7 @@ def generate_individual_report_args(parser):
                             help='Path to output PDF')
     return parser
 
-def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin_json:str, relatedness_tsv:str, output_pdf:str):
+def generate_individual_report(sample_tsv: str, qc_tsv: str, bracken_tsv: str, amr_json:str, toxin_json:str, relatedness_tsv:str, output_pdf:str):
     # Read in AMR data in JSON
     try:
         pd.set_option('display.max_colwidth', None)
@@ -135,6 +137,28 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
                 pdf.set_font("Helvetica", size=11)
     except IOError as e:
         logging.error(f"Error opening QC TSV {qc_tsv}")
+        logging.error(e)
+        exit(1)
+
+    pdf.ln(5)
+
+    # Read in bracken stats
+    pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_text_color(0,0,200) #blue
+    pdf.cell(w=0, h=5, txt="Bracken top hits", align = "L", ln=2)
+    
+    pdf.set_text_color(0,0,0)
+
+    try:
+        with open(bracken_tsv) as file:
+            bracken_tsv_reader = csv.reader(file, delimiter="\t")
+            for i, line in enumerate(bracken_tsv_reader):
+                pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
+                pdf.cell(w=60, h=5, txt = line[1], align = "C", border="TB")
+                pdf.cell(w=60, h=5, txt = line[2], align = "C", border="TBR", ln=1)
+                pdf.set_font("Helvetica", size=11)
+    except IOError as e:
+        logging.error(f"Error opening bracken TSV {bracken_tsv}")
         logging.error(e)
         exit(1)
 
@@ -293,5 +317,5 @@ if __name__ == '__main__':
         format='%(asctime)s - %(levelname)s - %(message)s', 
         level=logging.INFO)
 
-    generate_individual_report(args.sample_tsv, args.qc_tsv, args.amr_json, args.toxin_json, args.relatedness_tsv, args.output_pdf)
+    generate_individual_report(args.sample_tsv, args.qc_tsv, args.bracken_tsv, args.amr_json, args.toxin_json, args.relatedness_tsv, args.output_pdf)
 
