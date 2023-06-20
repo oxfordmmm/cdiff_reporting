@@ -41,11 +41,34 @@ done
 
 # Make cgmlst clusters
 mkdir $output_dir/cgmlst_clusters 
-python3 /mnt/scratch/colpus/cdiff_reporting/bin/make_cgmlst_dist_trees.py \
+python3 /mnt/scratch/colpus/cdiff_reporting/bin/make_cgmlst_clusters.py \
+    -f $run_dir/consensus_fasta_list.tsv \
     -s $output_dir/cgmlst/cgmlst \
     -o $output_dir/cgmlst_clusters \
     -c 20
 
+# runListCompare for each cluster (take 5 min)
+cd /mnt/scratch/colpus/cdiff_reporting/bin/clustering_rlc
+conda activate rlc_env
+
+for cluster in $output_dir/cgmlst_clusters/*consensus.tsv
+do
+    base=$(basename $cluster)
+    i=$(echo $base | cut -d'_' -f2)
+    echo cluster $i
+    echo $cluster
+    python runListCompare.py -i runListCompare_config_base.ini -s $cluster -o $output_dir/cgmlst_clusters/$i 
+
+    for tree in $output_dir/cgmlst_clusters/$i/cluster_ml/*scaled*.tree
+    do
+        echo $tree
+        type=$(basename $tree | cut -d'_' -f3)
+        cp $tree $output_dir/cgmlst_clusters/cluster_${i}_${type}_scaled.newick
+    done
+done
+
+# Draw all trees
+conda activate /mnt/scratch/colpus/cdiff_reporting/conda_env
 Rscript /mnt/scratch/colpus/cdiff_reporting/bin/draw_trees.R $output_dir/cgmlst_clusters
 
 # Make summary pdf

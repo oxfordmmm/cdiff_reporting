@@ -88,7 +88,7 @@ if __name__=='__main__':
 
 	for c in list(clusterDict.keys()):
 		clusterListOut = '%s/cluster/cluster_%s.txt'%(output_stem, c)
-		if len(clusterDict[c])>2:
+		if len(clusterDict[c])>=2:
 			f = open(clusterListOut, 'w')
 			for sample in clusterDict[c]:
 				fa = faDict[sample]
@@ -120,7 +120,7 @@ if __name__=='__main__':
 			getAC(c, output_stem, maskfile, varsite_keep, seq_keep, align_n)
 
 	# get list of clusters
-	cd = [int(c) for c in list(clusterDict.keys()) if len(clusterDict[c])>2]
+	cd = [int(c) for c in list(clusterDict.keys()) if len(clusterDict[c])>=2]
 	cd.sort(reverse=True)
 
 	procs = []

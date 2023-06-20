@@ -5,6 +5,7 @@ from fpdf import FPDF
 import logging
 from pathlib import Path
 import csv
+import os
 import json
 from PIL import Image
 
@@ -142,7 +143,14 @@ def generate_summary_report(samples_json_file: str, output_pdf:str):
     pdf.add_page()
     for cluster_no, samples in clusters.items():
         if cluster_no != "No Cluster":
-            image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}.png"
+            if os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf_scaled.png"):
+                image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cf_scaled.png"
+            elif os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_phyml_scaled.png"):
+                image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_phyml_scaled.png"
+            elif os.path.isfile(f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cgmlst_scaled.png"):
+                image_path = f"{samples_json['cluster_trees_dir']}/cluster_{cluster_no}_cgmlst_scaled.png"
+            else:
+                print("No tree image found")
             remaining_space = pdf.h - pdf.get_y()
 
             # Get the height of the header

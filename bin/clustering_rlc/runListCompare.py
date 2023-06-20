@@ -6,13 +6,27 @@ from subprocess import call
 from subprocess import check_output
 import sys, os, gzip
 from configparser import ConfigParser
+from argparse import ArgumentParser
 from Bio import SeqIO
 
 import treeswift
 
 
 ### import options from ini file ###
-ini_file = sys.argv[1]
+arg_parser = ArgumentParser(description='Produce trees for cluster.')
+arg_parser.add_argument('-i', '--ini', required=True,
+                    help='runListCompare config file')
+arg_parser.add_argument('-s', '--seqlist', required=True,
+                    help='tsv of id-path for cluster')
+arg_parser.add_argument('-o', '--output_stem', required=True,
+                    help='output folder')
+arg_parser.add_argument('-t', '--threads', required=False, default=1,
+                    help='Number of threads to use')
+args = arg_parser.parse_args()
+
+
+ini_file = args.ini
+print(ini_file)
 
 parser = ConfigParser()
 parser.read(ini_file)
@@ -25,18 +39,18 @@ refname = parser.get('ref', 'refname')
 maskfile = parser.get('ref', 'maskfile')
 
 #import samples section
-seqlist = parser.get('samples', 'seqlist')
+seqlist = args.seqlist
 
 #import options
 perACGT_cutoff = float(parser.get('options', 'perACGT_cutoff'))
-nprocs = int(parser.get('options', 'nprocs'))
+nprocs = int(args.threads)
 cluster_snp = int(parser.get('options', 'cluster_snp'))
 varsite_keep = float(parser.get('options', 'varsite_keep'))
 seq_keep = float(parser.get('options', 'seq_keep'))
 align_n = int(parser.get('options', 'align_n'))
 
 #output options
-output_stem = parser.get('output', 'output_stem')
+output_stem = args.output_stem
 round_dp = int(parser.get('output', 'round_dp'))
 draw_cf = parser.getboolean('output', 'draw_cf')
 use_pypy = parser.getboolean('output', 'use_pypy')
