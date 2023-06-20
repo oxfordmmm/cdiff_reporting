@@ -61,7 +61,7 @@ def write_qc(qc_dict, outfile):
         quality = 'Pass' if 50 <= seq_length <= 150 else 'Fail'
         file.write(f"Sequence length (bp)\t50-150\t{seq_length}\t{quality}\n")
 
-        gc = qc_dict['assembly_GC']
+        gc = round(qc_dict['assembly_GC'], 1)
         quality = 'Pass' if 27.9 <= gc <= 29.2 else 'Fail'
         file.write(f"%GC\t27.9-29.2\t{gc}\t{quality}\n")
 
