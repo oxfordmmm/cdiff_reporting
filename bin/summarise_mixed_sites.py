@@ -48,5 +48,5 @@ if __name__ == '__main__':
             dfs.append(df)
     
     df = pd.concat(dfs)
-    df['contaminated'] = df['deviance'] > 112 and df['ML_sites_diff'] > 1
+    df['contaminated'] = (df['deviance'] > 112) & (df['ML_sites_diff'] > 1)
     df.to_csv(f"{outfile_prefix}_mixed_infection_estimates.csv", index=False)
