@@ -4,15 +4,37 @@ import os
 import sys
 import pandas as pd
 
-phage_list = ['Clostridium phage phiCD6356', 'Colneyvirus CD27', 'Colneyvirus CDKM15', 'Colneyvirus CDKM9',
-              'Colneyvirus MMP02', 'Leicestervirus CD111', 'Leicestervirus CD146', 'Leicestervirus CD382',
-              'Lubbockvirus CD119', 'Lubbockvirus CDHM19', 'Sherbrookevirus CD4811', 'Sherbrookevirus CD506',
-              'Sherbrookevirus CDHM13', 'Sherbrookevirus CDHM14', 'Sherbrookevirus MMP04',
+phage_list = ['Clostridium phage phiCD6356', 'Colneyvirus CD27', 'Colneyvirus CDKM15',
+              'Colneyvirus CDKM9', 'Colneyvirus MMP02', 'Leicestervirus CD111', 'Leicestervirus CD146',
+              'Leicestervirus CD382', 'Lubbockvirus CD119', 'Lubbockvirus CDHM19', 'Sherbrookevirus CD4811',
+              'Sherbrookevirus CD506', 'Sherbrookevirus CDHM13', 'Sherbrookevirus CDHM14', 'Sherbrookevirus MMP04',
               'Yongloolinvirus CDMH1', 'Yongloolinvirus MMP01']
+
 plausible_misclassification = ['Enterocloster bolteae', '[Clostridium] scindens',
-                               '[Clostridium] innocuum', '[Ruminococcus] gnavus',
-                                'Roseburia intestinalis', 'Blautia obeum', 
-                                'Enterocloster clostridioformis']
+        '[Clostridium] innocuum', '[Ruminococcus] gnavus',
+        'Roseburia intestinalis', 'Blautia obeum', 'Enterocloster clostridioformis',
+        'Clostridium perfringens',
+        'Clostridioides sp. ES-S-0107-01',
+        'Eubacterium maltosivorans',
+        'Anaerostipes caccae',
+        'Romboutsia ilealis',
+        'Clostridioides sp. ES-S-0173-01',
+        'Peptacetobacter hiranonis',
+        'Flavobacterium sp. N502536',
+        'Dorea longicatena',
+        'Flavonifractor plautii',
+        'Clostridium cadaveris',
+        'Qiania dongpingensis',
+        'Blautia sp. NBRC 113351',
+        'Blautia producta',
+        'Blautia obeum',
+        'Blautia argi',
+        'Coprococcus comes',
+        'Paeniclostridium sordellii',
+        'Faecalibacterium sp. IP-3-29',
+        'Thomasclavelia ramosa',
+        'Blautia wexlerae'
+]   
 
 def flatten(l):
     return [item for sublist in l for item in sublist] 
@@ -36,7 +58,7 @@ def get_group_sums(bracken_df):
 def write_qc(group_sums, top_hits, outfile, num):
     with open(outfile, 'w') as file:
         group_cols = ['cdiff_pc', 'phage_pc', 'misclassification_pc', 'other_pc']
-        top_hit_cols = flatten([[f"bracken_{str(i)}", f"tpc_{str(i)}"]  for i in range(1,num+1)])
+        top_hit_cols = flatten([[f"bracken_{str(i)}", f"pc_{str(i)}"]  for i in range(1,num+1)])
 
         group_values = [str(round(pc, 2)) for pc in group_sums]
         top_hit_values = flatten([ [species, str(pc)] for species, pc in top_hits])
@@ -56,6 +78,9 @@ if __name__ == '__main__':
 
     if not os.path.exists(bracken_file):
         print("Error: bracken file doesn't exist.")
+        grouped_pcs = [0,0,0,0]
+        top_hits = [("", 0) for i in range(num)]
+        write_qc(grouped_pcs, top_hits, args.outfile, num)
         sys.exit()
 
     try:
