@@ -37,3 +37,16 @@ if __name__ == '__main__':
     
     df = pd.concat(dfs)
     df.to_csv(f"{outfile_prefix}_variant_sites.csv", index=False)
+
+    dfs = []
+    for filename in os.listdir(dir):
+        if filename.endswith('_mixed_infection_estimate.tsv'):
+            file_path = os.path.join(dir, filename)
+            id = filename.replace('_mixed_infection_estimate.tsv', '')
+            
+            df = pd.read_csv(file_path, sep='\t')
+            dfs.append(df)
+    
+    df = pd.concat(dfs)
+    df['contaminated'] = df['deviance'] > 112 and df['ML_sites_diff'] > 1
+    df.to_csv(f"{outfile_prefix}_mixed_infection_estimates.csv", index=False)
