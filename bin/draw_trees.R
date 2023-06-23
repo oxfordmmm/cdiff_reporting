@@ -71,12 +71,24 @@ draw_tree <- function(newick_file) {
   depth <- get_depth(tree)
   print(sprintf("depth %s", depth))
   # tree <- normalise_tree(tree)
+
+  scale_width <- 1
+  scale_label <- 'distance'
+  if(str_detect(newick_file, 'iqtree_scaled') | str_detect(newick_file, 'cf_scaled') | str_detect(newick_file, 'phyml_scaled')) {
+    scale_width <- 10
+    scale_label <- 'snp distance'
+  }
+
+  if(str_detect(newick_file, 'cgmlst_scaled')) {
+    scale_width <- 1
+    scale_label <- 'cgmlst distance'
+  }
   
   gg_tr <- ggtree(as.treedata(tree)) +
     geom_tiplab(size=text_size) +
     # theme_tree2() +
-    geom_treescale(width = 1) +
-    xlab('cgmlst distance') +
+    geom_treescale(width = scale_width) +
+    xlab(scale_label) +
     theme(axis.title.x = element_text(size=18))
 
   if(depth < 7) {

@@ -88,6 +88,7 @@ do
 
     #qc
     python3 bin/parseQCoutputs.py -f "${SOURCE_DIR}/raw_fastqc_single/${genome}_raw_reads_fastqc/${genome}.txt" -q "${SOURCE_DIR}/quast/${genome}_Quastreport.tsv" -o "${OUTPUT_DIR}/${genome}_QC_summary_table.tsv"
+    python3 bin/parse_bracken_outputs.py -b "${SOURCE_DIR}/kraken2/${genome}_bracken_report.tsv" -o "${OUTPUT_DIR}/${genome}_bracken_summary_table.tsv"
 
     #amr profile
     python3 bin/AMR_process.py -c data/AMR_catalogue.json \
@@ -112,6 +113,7 @@ do
     #final report
     python3 bin/generate_individual_report.py -s "${OUTPUT_DIR}/${genome}_name.tsv" \
     -q "${OUTPUT_DIR}/${genome}_QC_summary_table.tsv" \
+    -b "${OUTPUT_DIR}/${genome}_bracken_summary_table.tsv" \
     -a "${OUTPUT_DIR}/${genome}_resistance_report.json" \
     -t "${OUTPUT_DIR}/${genome}_toxin_coding_genes_report.json" \
     -r "${OUTPUT_DIR}/${genome}_cgmlst_comparisons.tsv" \

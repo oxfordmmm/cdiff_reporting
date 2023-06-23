@@ -98,7 +98,7 @@ if __name__=='__main__':
 			getML(c)
 	
 	# get list of clusters
-	cd = [int(c) for c in list(clusterDict.keys()) if len(clusterDict[c])>2]
+	cd = [int(c) for c in list(clusterDict.keys()) if len(clusterDict[c])>=2]
 	cd.sort(reverse=True)
 	
 	procs = []

@@ -12,6 +12,8 @@ def generate_individual_report_args(parser):
                             help='Path to basic sample info TSV')
     parser.add_argument('-q', '--qc_tsv', required=True,
                             help='Path to QC summary TSV')
+    parser.add_argument('-b', '--bracken_tsv', required=True,
+                            help='Path to bracken summary TSV')
     parser.add_argument('-a', '--amr_json', required=True,
                             help='Path to AMR JSON')
     parser.add_argument('-t', '--toxin_json', required=True,
@@ -22,7 +24,7 @@ def generate_individual_report_args(parser):
                             help='Path to output PDF')
     return parser
 
-def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin_json:str, relatedness_tsv:str, output_pdf:str):
+def generate_individual_report(sample_tsv: str, qc_tsv: str, bracken_tsv: str, amr_json:str, toxin_json:str, relatedness_tsv:str, output_pdf:str):
     # Read in AMR data in JSON
     try:
         pd.set_option('display.max_colwidth', None)
@@ -140,6 +142,28 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
 
     pdf.ln(5)
 
+    # Read in bracken stats
+    pdf.set_font("Helvetica", "B", size=12)
+    pdf.set_text_color(0,0,200) #blue
+    pdf.cell(w=0, h=5, txt="Bracken top hits", align = "L", ln=2)
+    
+    pdf.set_text_color(0,0,0)
+
+    try:
+        with open(bracken_tsv) as file:
+            bracken_tsv_reader = csv.reader(file, delimiter="\t")
+            for i, line in enumerate(bracken_tsv_reader):
+                pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
+                pdf.cell(w=60, h=5, txt = line[1], align = "C", border="TB")
+                pdf.cell(w=60, h=5, txt = line[2], align = "C", border="TBR", ln=1)
+                pdf.set_font("Helvetica", size=11)
+    except IOError as e:
+        logging.error(f"Error opening bracken TSV {bracken_tsv}")
+        logging.error(e)
+        exit(1)
+
+    pdf.ln(5)
+
     # Toxin coding genes P/A
     pdf.set_font("Helvetica", "B", size=12)
     pdf.set_text_color(0,0,200) #blue
@@ -167,8 +191,8 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
                 pdf.cell(20, 5, "Present", border="TB", align = "C", ln=0)
             else:
                 pdf.cell(20, 5, "Truncated", border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["percent_identity"]), border="TB", align = "C", ln=0)
-            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]) + " (%.2f)"%match_pc, border="TBR", align = "C", ln=1)
+            pdf.cell(epw/6, 5, str(round(toxin_df[row]["percent_identity"], 1)), border="TB", align = "C", ln=0)
+            pdf.cell(epw/6, 5, str(toxin_df[row]["length"]) + " (%.0f)"%match_pc, border="TBR", align = "C", ln=1)
         else:
             pdf.cell(20, 5, "Not Found", border="TB", align = "C", ln=0)
             pdf.cell(epw/6, 5, "N/A", border="TB", align = "C", ln=0)
@@ -207,15 +231,21 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, amr_json:str, toxin
     for row in amr_df.index:
         pdf.cell(epw/3, 5, str(row), border="TBL", ln=0)
         pdf.cell(pdf.font_size * 3, 5, str(amr_df['resistance'][row]), border="TB", align = "C", ln=0)
-        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]"), border="TBR", align = "C", ln=1)
+        pdf.cell((4*(epw/6)) - (pdf.font_size*3), 5, str(amr_df['evidence_resistance'][row]).strip("[]").replace('\'', ''), border="TBR", align = "C", ln=1)
         #pdf.cell(epw, row_height, str(amr_df['evidence_sensitive'][row]), border="BLR", ln=1)
 
-    drug_str = ["Catalogue Features not found: ", ""]
-    for row in amr_df.index:
-        if len(amr_df['evidence_sensitive'][row]) > 0:
-            drug_str[1] += f"{row} = {amr_df['evidence_sensitive'][row]}; ".translate( {ord(i): None for i in "[]"} )
-        else:
-            drug_str[1] += f"{row} = None; "
+    # Needs to be updated if catalogue changes. Allows for more compact description here though
+    amr_checks = {
+        "Metronidazole":["pCD-METRO"],
+        "Tetracycline":["tet"],
+        "Macrolide/Clindamycin":["ermB"],
+        "Aminoglycoside":["aphA", "AAC"],
+        "Quinolone/Fluoroquinolone":["gyrA-T82I", "gyrB-D426N"],
+        "Fidaxomicin":["rpoB-V1143F", "rpoB-V1143G", "rpoB-V1143L", "rpoB-Q1074K", "rpoC-D237Y"]
+    }
+    drug_str = ["Catalogue Features checked for: ", ""]
+    for drug, checks in amr_checks.items():
+        drug_str[1] += f"{drug} = {', '.join(checks)}; "
     
     # Footnote features not found for sensitivity recording
     first_line = 1
@@ -287,5 +317,5 @@ if __name__ == '__main__':
         format='%(asctime)s - %(levelname)s - %(message)s', 
         level=logging.INFO)
 
-    generate_individual_report(args.sample_tsv, args.qc_tsv, args.amr_json, args.toxin_json, args.relatedness_tsv, args.output_pdf)
+    generate_individual_report(args.sample_tsv, args.qc_tsv, args.bracken_tsv, args.amr_json, args.toxin_json, args.relatedness_tsv, args.output_pdf)
 
