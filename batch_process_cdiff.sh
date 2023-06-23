@@ -4,8 +4,9 @@ unset $SOURCE_DIR
 unset $DATA_DIR
 unset $CGMLST_DIR
 unset $OUTPUT_DIR
+unset $MAPPING_DIR
 
-while getopts "s:d:c:o:" flag
+while getopts "s:d:c:o:m:" flag
 do
     case "${flag}" in
         s)
@@ -14,6 +15,13 @@ do
                 exit 1
             fi
             SOURCE_DIR=${OPTARG}
+            ;;
+        m)
+            if ! [[ -d "$OPTARG" ]]; then
+                echo "Please enter a valid mapping directory."
+                exit 1
+            fi
+            MAPPING_DIR=${OPTARG}
             ;;
         d) 
             if ! [[ -d "$OPTARG" ]]; then
