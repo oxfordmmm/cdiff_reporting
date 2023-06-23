@@ -1,6 +1,7 @@
 #! /env/bin/python3
 from argparse import ArgumentParser
 from os.path import exists
+import pandas as pd
 
 def get_fastqc_stats(fastqc_file, qc_dict):
     at_length_section = False
@@ -49,6 +50,22 @@ def get_quast_stats(quast_file, qc_dict):
             elif line.startswith('N50'):
                 qc_dict['N50'] = int(line.split('\t')[1])
 
+def get_bracken_result(bracken_summary, qc_dict):
+    df = pd.read_csv(bracken_summary, sep='\t')
+    qc_dict['bracken_other_pc'] = df['other_pc'].iloc[0]
+
+def get_mixed_infection_result(mixed_infection_estimate, qc_dict):
+    df = pd.read_csv(mixed_infection_estimate, sep='\t')
+    qc_dict['mixed_infection'] = df['ML_sites_diff'].iloc[0] > 1.5 and df['deviance'].iloc[0] > 112
+
+def get_depth_result(depth, qc_dict):
+    df = pd.read_csv(depth)
+    qc_dict['avg_depth'] = round(df['avDepth'].iloc[0], 1)
+
+def get_N_rate(n_rate_file, qc_dict):
+    results = pd.read_csv(n_rate_file, sep='\t').iloc[0].to_dict()
+    qc_dict['N_rate'] = round(results['N_rate'] + results['gap_rate'], 2)
+
 def write_qc(qc_dict, outfile):
     with open(outfile, 'w') as file:
         file.write("Metric\tExpected value\tActual value\tQuality\n")
@@ -77,11 +94,31 @@ def write_qc(qc_dict, outfile):
         quality = 'Pass' if 10 <= n50 <= 1000 else 'Fail'
         file.write(f"N50 (Kbp)\t10-1000\t{n50}\t{quality}\n")
 
+        bracken_other = round(qc_dict['bracken_other_pc'], 1)
+        quality = 'Pass' if bracken_other <= 2 else 'Fail'
+        file.write(f"Residual contamination %\t0-2\t{bracken_other}\t{quality}\n")
+
+        mixed_infection = qc_dict['mixed_infection']
+        quality = 'Pass' if not mixed_infection else 'Fail'
+        file.write(f"Mixed ST's\tFalse\t{mixed_infection}\t{quality}\n")
+
+        value = qc_dict['avg_depth']
+        quality = 'Pass' if value > 10 else 'Fail'
+        file.write(f"avg read depth\t>10\t{value}\t{quality}\n")
+
+        value = qc_dict['N_rate']
+        quality = 'Pass' if value < 2 else 'Fail'
+        file.write(f"N rate\t0-2\t{value}\t{quality}\n")
+
 
 if __name__ == '__main__':
     parser = ArgumentParser(description='Summarise fastqc and quast outputs to tsv.')
     parser.add_argument('-f', '--fastQC_output', required=True)
     parser.add_argument('-q', '--quast_output', required=True)
+    parser.add_argument('-b', '--bracken_summary', required=True)
+    parser.add_argument('-m', '--mixed_infection_estimate', required=True)
+    parser.add_argument('-d', '--read_depth_stats', required=True)
+    parser.add_argument('-n', '--n_count', required=True)
     parser.add_argument('-o', '--outfile', required=True)
     args = parser.parse_args()
 
@@ -94,16 +131,24 @@ if __name__ == '__main__':
         'assembly_size' : 0,
         'largest_contig' : 0,
         'N50' : 0,
+        'bracken_other_pc': 0,
+        'mixed_infection': False,
+        'N_rate' : 0,
+        'avg_depth': 0,
     }
 
-    if exists(args.fastQC_output):
-        get_fastqc_stats(args.fastQC_output, qc_dict)
-    else:
-        print("fastQC file doesn't exist, skipping")
-    if exists(args.quast_output):
-        get_quast_stats(args.quast_output, qc_dict)
-    else:
-        print("quast file doesn't exist, skipping")
+    files = [args.fastQC_output, args.quast_output, args.bracken_summary,
+             args.mixed_infection_estimate, args.read_depth_stats,
+             args.n_count]
+    funcs = [get_fastqc_stats, get_quast_stats, get_bracken_result,
+             get_mixed_infection_result, get_depth_result,
+             get_N_rate]
+
+    for file, func in zip(files, funcs):
+        if exists(file):
+            func(file, qc_dict)
+        else:
+            print(f"{file} file doesn't exist, skipping")
 
     write_qc(qc_dict, args.outfile)
 

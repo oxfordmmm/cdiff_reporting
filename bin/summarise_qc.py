@@ -41,6 +41,19 @@ def read_bracken(dir):
     df = pd.concat(dfs)
     return df
 
+def read_mixed_infection(dir):
+    dfs = []
+    for filename in os.listdir(dir):
+        if filename.endswith('_mixed_infection_estimate.tsv'):
+            file_path = os.path.join(dir, filename)
+
+            df = pd.read_csv(file_path, sep='\t', index_col=False)
+            dfs.append(df)
+    
+    df = pd.concat(dfs)
+    df['contaminated'] = (df['deviance'] > 112) & (df['ML_sites_diff'] > 1.5)
+    return df
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-d', '--dir', required=True,
@@ -53,6 +66,8 @@ if __name__ == '__main__':
 
     qc_df = read_stadard_qc(dir)
     bracken_df = read_bracken(dir)
+    mixed_infection_df = read_mixed_infection(dir)
 
-    df = qc_df.merge(bracken_df, on='id', how='left')
+    df = qc_df.merge(bracken_df, on='id', how='left') \
+            .merge(mixed_infection_df, on='id', how='left')
     df.to_csv(output_file, index=False)
