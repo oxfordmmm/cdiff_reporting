@@ -29,39 +29,30 @@ def compareHash(input_hash, compareOut, hash_folder, distance_cutoff, min_distan
 	closest_samples = []
 	sys.stdout.write("Comparing profiles\n")
 	start = time.time()
+
+	sample_comparisons = []
 	for i in range(0, len(jsonList)):
 		a1 = [jsonList[i]['alleles'][k] for k in jsonList[i]['alleles'].keys() if k not in excludeList]
 		a2 = [in_hash['alleles'][k] for k in in_hash['alleles'].keys() if k not in excludeList]
-		compared = 0
-		diff = 0
-		inserted = False
 		compared = len([True for l1,l2 in zip(a1,a2) if l1 and l2])
 		diff = len([True for l1,l2 in zip(a1,a2) if l1 and l2 and l1!=l2])
 		
-		if compared> 0:
+		if compared > 0:
 			sample = (jsonList[i]['name'], compared, diff, "%0.3f"%(diff/compared))
-			if diff < distance_cutoff:
-				if diff > min_distance_cutoff:
-					if len(closest_samples) > 0:
-						closest_samples.insert(bisect.bisect_left([i[2] for i in closest_samples], sample[2]), sample)
-					else:
-						closest_samples = [sample]
-					inserted = True
-			elif min_number_of_samples > 0:
-				if len(closest_samples) > 0 and len(closest_samples) < min_number_of_samples:
-					index = bisect.bisect_left([i[2] for i in closest_samples], sample[2])
-					if index < min_number_of_samples:
-						closest_samples.insert(index, sample)
-				else:
-					closest_samples = [sample]
-				inserted = True
-			
-			if inserted and len(closest_samples) > min_number_of_samples:
-				while len(closest_samples) > min_number_of_samples:
-					if closest_samples[-1][2] < distance_cutoff:
-						break
-					closest_samples.pop()
+			sample_comparisons.append((sample, diff))
+	
+	end = time.time()
+	sys.stdout.write("Seconds to compare profiles: %s\n"%(end - start))
+	start = time.time()
 
+	# sort by differences ascending
+	sample_comparisons = sorted(sample_comparisons, key=lambda x: x[1])
+	# Filter out ones which are too close
+	sample_comparisons = [(sample, diff) for sample, diff in sample_comparisons if diff > min_distance_cutoff]
+	# count number which are close enough
+	num_close = len([1 for sample, diff in sample_comparisons if diff < distance_cutoff])
+	sample_comparisons = sample_comparisons[:max(min_number_of_samples, num_close)]
+	closest_samples = [sample for sample, diff in sample_comparisons]
 
 	with open(compareOut, 'w') as w:
 		w.write('Sample\tLoci_compared\tDifferences\tDistance\n')
@@ -69,8 +60,7 @@ def compareHash(input_hash, compareOut, hash_folder, distance_cutoff, min_distan
 			w.write('%s\t%s\t%s\t%s\n'%(sample[0], sample[1], sample[2], sample[3]))
 	
 	end = time.time()
-	sys.stdout.write("Seconds to compare profiles: %s\n"%(end - start))
-
+	sys.stdout.write("Seconds to sort: %s\n"%(end - start))
 
 if __name__ == "__main__":
 	
