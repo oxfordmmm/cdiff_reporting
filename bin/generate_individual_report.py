@@ -150,13 +150,15 @@ def generate_individual_report(sample_tsv: str, qc_tsv: str, bracken_tsv: str, a
     pdf.set_text_color(0,0,0)
 
     try:
-        with open(bracken_tsv) as file:
-            bracken_tsv_reader = csv.reader(file, delimiter="\t")
-            for i, line in enumerate(bracken_tsv_reader):
-                pdf.cell(w=60, h=5, txt = line[0], align = "L", border="TBL")
-                pdf.cell(w=60, h=5, txt = line[1], align = "C", border="TB")
-                pdf.cell(w=60, h=5, txt = line[2], align = "C", border="TBR", ln=1)
-                pdf.set_font("Helvetica", size=11)
+        df = pd.read_csv(bracken_tsv, sep='\t')
+        bracken_results = df.iloc[0].to_dict()
+        pdf.cell(w=80, h=5, txt = "Species", align = "L", border="TBL")
+        pdf.cell(w=40, h=5, txt = "read %", align = "C", border="TBR", ln=1)
+        pdf.set_font("Helvetica", size=11)
+
+        for i in range(1,4):
+            pdf.cell(w=80, h=5, txt = bracken_results[f"bracken_{i}"], align = "L", border="TBL")
+            pdf.cell(w=40, h=5, txt = str(bracken_results[f"pc_{i}"]), align = "C", border="TBR", ln=1)
     except IOError as e:
         logging.error(f"Error opening bracken TSV {bracken_tsv}")
         logging.error(e)
