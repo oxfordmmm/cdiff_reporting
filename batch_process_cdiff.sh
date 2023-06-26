@@ -81,9 +81,9 @@ do
     perl bin/get_sample_name_MLST.pl "${SOURCE_DIR}/mlst/${genome}_ST.tsv" "${OUTPUT_DIR}/${genome}_name.tsv" "${DATA_DIR}/LookUpTable_ST_RT.tsv"
 
     #qc
-    cp $MAPPING_DIR/mixed_sites/${genome}_mixed_infection_estimate.tsv $OUTPUT_DIR
-
     python3 bin/parse_bracken_outputs.py -n 10 -b "${SOURCE_DIR}/kraken2/${genome}_bracken_report.tsv" -o "${OUTPUT_DIR}/${genome}_bracken_summary_table.tsv"
+    
+    python3 bin/parse_mixed_sites_outputs.py -m $MAPPING_DIR/mixed_sites/${genome}_mixed_infection_estimate.tsv -o "${OUTPUT_DIR}/${genome}_mixed_infection_estimate.tsv"
 
     python3 bin/parseQCoutputs.py -f "${SOURCE_DIR}/raw_fastqc_single/${genome}_raw_reads_fastqc/${genome}.txt" \
         -q "${SOURCE_DIR}/quast/${genome}_Quastreport.tsv" \

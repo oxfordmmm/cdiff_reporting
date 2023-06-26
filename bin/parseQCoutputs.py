@@ -55,8 +55,8 @@ def get_bracken_result(bracken_summary, qc_dict):
     qc_dict['bracken_other_pc'] = df['other_pc'].iloc[0]
 
 def get_mixed_infection_result(mixed_infection_estimate, qc_dict):
-    df = pd.read_csv(mixed_infection_estimate, sep='\t')
-    qc_dict['mixed_infection'] = df['ML_sites_diff'].iloc[0] > 1.5 and df['deviance'].iloc[0] > 112
+    df = pd.read_csv(mixed_infection_estimate, sep='\t', index_col=False)
+    qc_dict['mixed_infection'] = df['mixed_ST'].iloc[0]
 
 def get_depth_result(depth, qc_dict):
     df = pd.read_csv(depth)
