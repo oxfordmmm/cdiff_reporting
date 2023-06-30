@@ -2,8 +2,6 @@ from argparse import ArgumentParser
 import os
 import pandas as pd
 
-metrics = ['Total Sequences (M)', 'Sequence length (bp)', '%GC', 'Total assembly size (Mbp)', 'Largest contig (Kbp)', 'N50 (Kbp)']
-
 
 def qc_to_dict(filepath):
     descriptions = {}

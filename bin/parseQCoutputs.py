@@ -62,17 +62,17 @@ def get_depth_result(depth, qc_dict):
     df = pd.read_csv(depth)
     qc_dict['avg_depth'] = round(df['avDepth'].iloc[0], 1)
 
-def get_N_rate(n_rate_file, qc_dict):
+def get_pc_called(n_rate_file, qc_dict):
     results = pd.read_csv(n_rate_file, sep='\t').iloc[0].to_dict()
-    qc_dict['N_rate'] = round(results['N_rate'] + results['gap_rate'], 2)
+    qc_dict['pc_called'] = round(results['pc_called'], 2)
 
 def write_qc(qc_dict, outfile):
     with open(outfile, 'w') as file:
         file.write("Metric\tExpected value\tActual value\tQuality\n")
 
         n_seq = round(qc_dict['n_sequences'] / 1000000, 1)
-        quality = 'Pass' if 1 <= n_seq <= 20 else 'Fail'
-        file.write(f"Total Sequences (M)\t1-20\t{n_seq}\t{quality}\n")
+        quality = 'Pass' if 0.5 <= n_seq <= 20 else 'Fail'
+        file.write(f"Total Sequences (M)\t0.5-20\t{n_seq}\t{quality}\n")
 
         seq_length = qc_dict['avg_seq_length']
         quality = 'Pass' if 50 <= seq_length <= 150 else 'Fail'
@@ -83,12 +83,12 @@ def write_qc(qc_dict, outfile):
         file.write(f"%GC\t27.9-29.2\t{gc}\t{quality}\n")
 
         size = round(qc_dict['assembly_size'] / 1000000, 1)
-        quality = 'Pass' if 3.9 <= size <= 4.5 else 'Fail'
-        file.write(f"Total assembly size (Mbp)\t3.9-4.5\t{size}\t{quality}\n")
+        quality = 'Pass' if 3.8 <= size <= 4.8 else 'Fail'
+        file.write(f"Total assembly size (Mbp)\t3.8-4.8\t{size}\t{quality}\n")
 
         largest_contig = round(qc_dict['largest_contig'] / 1000, 1)
-        quality = 'Pass' if 1 <= largest_contig <= 1000 else 'Fail'
-        file.write(f"Largest contig (Kbp)\t1-1000\t{largest_contig}\t{quality}\n")
+        quality = 'Pass' if 1 <= largest_contig <= 4300 else 'Fail'
+        file.write(f"Largest contig (Kbp)\t1-4300\t{largest_contig}\t{quality}\n")
 
         n50 = round(qc_dict['N50'] / 1000, 1)
         quality = 'Pass' if 10 <= n50 <= 1000 else 'Fail'
@@ -103,12 +103,12 @@ def write_qc(qc_dict, outfile):
         file.write(f"Mixed ST's\tFalse\t{mixed_infection}\t{quality}\n")
 
         value = qc_dict['avg_depth']
-        quality = 'Pass' if value > 10 else 'Fail'
-        file.write(f"avg read depth\t>10\t{value}\t{quality}\n")
+        quality = 'Pass' if value >= 20 else 'Fail'
+        file.write(f"avg read depth\t>=20\t{value}\t{quality}\n")
 
-        value = qc_dict['N_rate']
-        quality = 'Pass' if value < 2 else 'Fail'
-        file.write(f"N rate\t0-2\t{value}\t{quality}\n")
+        value = qc_dict['pc_called']
+        quality = 'Pass' if value > 95 else 'Fail'
+        file.write(f"% of bases called\t>95\t{value}\t{quality}\n")
 
 
 if __name__ == '__main__':
@@ -133,7 +133,7 @@ if __name__ == '__main__':
         'N50' : 0,
         'bracken_other_pc': 0,
         'mixed_infection': False,
-        'N_rate' : 0,
+        'pc_called' : 0,
         'avg_depth': 0,
     }
 
@@ -142,7 +142,7 @@ if __name__ == '__main__':
              args.n_count]
     funcs = [get_fastqc_stats, get_quast_stats, get_bracken_result,
              get_mixed_infection_result, get_depth_result,
-             get_N_rate]
+             get_pc_called]
 
     for file, func in zip(files, funcs):
         if exists(file):
