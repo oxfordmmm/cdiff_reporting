@@ -25,8 +25,8 @@ def initialise_toxin_dict(catalogue:dict):
     toxin_dict = dict()
     for gene in catalogue["toxin_genes"]:
         gene_length = catalogue["toxin_gene_lengths"][gene]
-        toxin_dict[gene] = {"presence": False, "percent_identity": -1,
-                            "length": -1, "gene_length": gene_length}
+        toxin_dict[gene] = {"presence": False, "percent_identity": 0,
+                            "length": 0, "gene_length": gene_length}
     return toxin_dict
 
 def find_toxin_genes_best(catalogue:dict, feature_list:set, toxin_dict:dict):
@@ -56,9 +56,9 @@ def find_toxin_genes_best(catalogue:dict, feature_list:set, toxin_dict:dict):
 def find_toxin_genes_sum(catalogue:dict, blast_file:str, toxin_dict:dict):
     toxin_genes = catalogue["toxin_genes"]
     df = pd.read_csv(blast_file, sep='\t')
-    df = df.query('pident > 90')
     df['low'] = df[['sstart', 'send']].min(axis=1)
     df['high'] =  df[['sstart', 'send']].max(axis=1)
+    df = df.query('pident > 90')
 
 
     for toxin in toxin_genes:

@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 import os
+import json
 import pandas as pd
 
 
@@ -66,6 +67,55 @@ def read_mlst(dir):
     df = pd.concat(dfs)
     return df
 
+def read_toxins(dir):
+    rows = []
+    for filename in os.listdir(dir):
+        if filename.endswith('_toxin_coding_genes_report.json'):
+            file_path = os.path.join(dir, filename)
+            id = filename.replace('_toxin_coding_genes_report.json', '')
+
+            with open(file_path, 'r') as json_file:
+                data = json.load(json_file)
+                # Create one long row
+                row = {'id' : id}
+                for gene, gene_data in data.items():
+                    row[f"{gene}_presence"] = gene_data['presence']
+                    row[f"{gene}_percent_identity"] = max(gene_data['percent_identity'], 0)
+                    row[f"{gene}_length"] = max(gene_data['length'], 0)
+                    row[f"{gene}_gene_length"] = gene_data['gene_length']
+                rows.append(row)
+
+    df = pd.DataFrame(rows)
+    return df
+
+def read_amr(dir):
+    rows = []
+
+    for filename in os.listdir(dir):
+        if filename.endswith('_resistance_report.json'):
+            file_path = os.path.join(dir, filename)
+            id = filename.replace('_resistance_report.json', '')
+
+            amr_df = pd.read_json(file_path).transpose()
+            amr_df.index.names = ['Drug']
+            amr_df = amr_df.reset_index()
+
+            row = {'id' : id}
+            for drug, res in zip(amr_df['Drug'], amr_df['resistance']):
+                row[f"{drug}_resistance"] = res
+            
+            for drug, res_genes, missing_genes in zip(amr_df['Drug'], amr_df['evidence_resistance'], amr_df['evidence_sensitive']):
+                for g in res_genes:
+                    g = g.replace(' ', '')
+                    row[f"{g} ({drug})"] = 1
+                for g in missing_genes:
+                    g = g.replace(' ', '')
+                    row[f"{g} ({drug})"] = 0
+            
+            rows.append(row)
+    
+    return pd.DataFrame(rows).fillna(0)
+
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -81,8 +131,12 @@ if __name__ == '__main__':
     bracken_df = read_bracken(dir)
     mixed_infection_df = read_mixed_infection(dir)
     mlst_df = read_mlst(dir)
+    toxin_df = read_toxins(dir)
+    amr_df = read_amr(dir)
 
     df =  mlst_df.merge(qc_df, on='id', how='left') \
             .merge(mixed_infection_df, on='id', how='left') \
-            .merge(bracken_df, on='id', how='left')
+            .merge(bracken_df, on='id', how='left') \
+            .merge(toxin_df, on='id', how='left') \
+            .merge(amr_df, on='id', how='left')
     df.to_csv(output_file, index=False)
