@@ -140,7 +140,7 @@ def process_AMR(blast_output_tsv: str, amr_finder_output_tsv:str, catalogue_file
     
     if not Path(amr_finder_output_tsv).is_file():
         logging.error("{} is not a file.".format(amr_finder_output_tsv))
-        # raise FileNotFoundError  # 
+        raise FileNotFoundError
     else:
         with open(amr_finder_output_tsv) as file:
             reader = csv.reader(file, delimiter="\t")
