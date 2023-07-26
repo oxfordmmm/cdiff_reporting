@@ -19,12 +19,11 @@ nextflow run /mnt/scratch/colpus/Bugflow_DSL2 -entry cdiff_mapping_snpCalling_DE
 ### Individual reports
 conda activate /mnt/scratch/colpus/cdiff_reporting/conda_env
 cd /mnt/scratch/colpus/cdiff_reporting
-rm -r $output_dir/new_reports
-bash batch_process_cdiff.sh -s $output_dir/cgmlst/ -m $output_dir/mapping -d /mnt/scratch/colpus/cdiff_reporting/data/ -c $output_dir/cgmlst/cgmlst -o $output_dir/new_reports
 
-python3 /mnt/scratch/colpus/cdiff_reporting/bin/toxin_jsons_to_csv.py -d $output_dir/new_reports -o $output_dir/toxin_summary.csv
-python3 /mnt/scratch/colpus/cdiff_reporting/bin/summarise_qc.py -d $output_dir/new_reports -o $output_dir/qc_summary.csv
-python3 /mnt/scratch/colpus/cdiff_reporting/bin/summarise_mixed_sites.py -d $output_dir/mapping/mixed_sites -o $output_dir/mixed_sites
+rm -r $output_dir/reports
+bash batch_process_cdiff.sh -s $output_dir/cgmlst/ -m $output_dir/mapping -d /mnt/scratch/colpus/cdiff_reporting/data/ -c $output_dir/cgmlst/cgmlst -o $output_dir/reports
+
+python3 /mnt/scratch/colpus/cdiff_reporting/bin/summarise_qc.py -d $output_dir/reports -o $output_dir/qc_summary.csv
 ### For group reports
 
 # Make consensus fasta list
@@ -77,7 +76,7 @@ cd $run_dir
 # -d can be list of directories
 python3 /mnt/scratch/colpus/cdiff_reporting/bin/make_summary_json.py \
     -s consensus_fasta_list.tsv -c $output_dir/cgmlst_clusters \
-    -d $output_dir/new_reports -o $run_dir/cluster_summary.json
+    -d $output_dir/reports -o $run_dir/cluster_summary.json
 
 cd /mnt/scratch/colpus/cdiff_reporting
 python3 bin/generate_summary_report.py -s $run_dir/cluster_summary.json -o $output_dir/cluster_report.pdf
