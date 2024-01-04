@@ -37,6 +37,8 @@ source  venv/bin/activate
 
 You'll also need to make an environment for run list compare. The environment file is `bin/clustering_rlc/rlc_env.yaml`
 
+Alternatively a conda environment can be created from `environment.yml`
+
 ## Usage
 ```
 bash batch_process_cdiff.sh -s /path/to/Bugflow/output/directory/ -d ~/data \
